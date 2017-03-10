@@ -1,0 +1,945 @@
+* Lecture 1
+
+  - *Computation*
+    - Declarative knowledge
+      - Tells you *what* something is, not *how* to do it
+      - Closest it gets is allow us to *test* it
+
+      e.g
+      #+BEGIN_EXAMPLE
+      \sqrt{x} is a number ~y~ s.t y^2 = x and y != 0
+      #+END_EXAMPLE
+
+    - Imperative knowledge
+      - Tells us *how* to do something
+      - A sequence of instructions to do something
+
+      e.g
+      #+BEGIN_EXAMPLE
+      - Start with a guess ~g~
+      - If g^2 = x, stop, return g
+      - else g = (g + x/g) / 2
+      - repeat
+      #+END_EXAMPLE
+
+    - *Computation* is about capturing the process of coming up with imperative process to do something
+    - A computation is based on a fixed set of primitive which are used to create complex computation
+
+  - *Programming language*
+    - There is no best programming-language, but some languages are better at doing certain things than other languages
+    - Language used in this course is python, but the course is not about Python. It is about how to program, Python is only a programming language choice and once we know to code in one language (Python in our case), we can learn a new language easily
+    - Different dimensions of a language
+      - High vs Low level
+
+        Low level: Very close to hardware. Primitives are moving data from one location in memory to other High level: Much richer set of primitives
+
+      - General vs targeted
+
+        General: For general purpose programming. Can be used to do a lot of things e.g Python Targeted: Designed for a specific purpose, e.g Maths(Mat-lab)
+
+      - Interpreted vs Compiled
+
+        Interpreted: Interpreted work directly on source-code at run time Compiled: Compiler complies code to intermediate form (Object code) which actually runs finally
+
+    - Python is
+      - High level
+      - General purpose
+      - Interpreted
+    - *Syntax of a language*
+
+      What are the legal expressions in this language
+
+    - *Static Semantics of a language
+
+      says which programs are meaningful i.e which expressions make sense
+
+    - *Semantics of a language
+
+      says what a program means, i.e what happen when the program runs
+* Lecture 2
+  - /Operands/ and /operators/ make the expressions to do operations
+
+  - Expressions can be typed directly in /interpreter/
+    - Interpreter evaluate expressions and print
+    - *Operator Overloading*
+      - Same operator behaves differently with different types, e.g + (plus) operator will, perform arithmetic addition on two numbers, concatenate two strings
+      - Multiplication between two integer, will return an interger value
+        - But multiplication between integer and string, will return new string
+      - Adding two string together, will combine that strings
+
+     - Type checking in python
+        - Cannot add interger value with string
+
+          e.g
+          #+BEGIN_SRC python
+          3*4
+          # 12
+
+          3*'ab'
+          # 'ababab'
+
+          'a'+'bcd'
+          #Joined two strings 'abcd'
+
+          3+'ab'
+          #Error because interger cannot join with string
+
+          str(3)+'ab'
+          # '3ab', str() is a type conversion
+          #+END_SRC
+        - /Type conversion/: Convert integer into string
+
+  - *Operator precedence*
+    - Operators have their priority order in which they operate
+    - Exponentiation are done before multiplication or division are done before addition and subtraction
+    - Expressions in parenthesis are done before multiplication (parenthesis are executed first)
+
+      e.g
+      #+BEGIN_SRC python
+      3+4*5
+      #Return 23, because multiplication done before addition
+
+      (3+4)*5
+      #Return 35, because addition under parentheses done before multiplication
+      #+END_SRC
+
+  - *Variables*
+    - Variables are created using an assignment statement and they have there own values
+
+      e.g
+      #+BEGIN_SRC python
+      x = 3
+      #It assign integer value to variable x
+      #+END_SRC
+
+    - Assigning a variable gives it a data-type which is dynamically derived from its value
+
+        e.g
+        #+BEGIN_SRC python
+        x = 3
+        #x has integer value and type
+
+        x = 'abc'
+        #Now type of x is changed from integer to string
+        #+END_SRC
+
+  - *Statement*
+    - Legal commands that python interpret: /print/, /assignment/
+    - *Print* put it back out in the screen
+    - *Assignmen* binding a name to a value
+
+  - *Style*
+    - Styles are very important in every programing language
+    - It help to understand code easily
+    - *Comment*: # (/HASH/) is using for comment section in python
+      - Comments can help to find what is going on inside code
+    - *Variable names*: Chosse variable names that make sense
+      - It tells what is trying to capture inside variable
+
+  - *Branching programs*: can change the order of instructions based on a test usually value of a variable
+    - *if statement*: if test is true, then do set of things and if test is false then skip that step
+    - *else statement*: if test is false then do this part
+
+      Syntax
+      #+BEGIN_EXAMPLE
+      if <some text>:
+         Block of instruction
+      else:
+         Block of instruction
+      #+END_EXAMPLE
+
+      e.g
+      #+BEGIN_SRC python
+      x = 15
+      if (x/2)*2 == x:
+         print 'Even'
+      else: print 'Odd'
+      #x is a variable which is having integer value 15
+      #if condition is true do next thing after the colon
+      #The sign '==' is comparing both sides
+      #if condition false else will do next thing after the colon
+      #+END_SRC
+
+  - *Boolean Combination*: /and/, /or/, /not/
+    - There are two types of Boolean is *True*, *False*
+    - *AND*: if both arguments are true it's true
+    - *OR*: if one argument true it's true
+    - *NOT*: if argument is not true it's true
+
+  - *Iteration or loops*: reuse same code over and over again
+
+* Lecture 3
+-We have looked at three different kinds of things: /Data/, /Operations/ and /Statements/
+  - *Data*:
+    - We have done /numbers/, /strings/ and /Boolean/
+
+  - *Operations*:
+    - /Additions/ and /multiplications/
+    - /and/, /or/
+
+  - *Statements*:
+    - /Assignment/
+    - /input/output/ (e.g raw input for input and print for output)
+    - /Branches/
+    - /loop mechanisms/ (e.g while)
+
+** Iterative programs
+- Iterative is used to describe a situation in which a sequence of instructions can be executed multiple times
+- Following are the steps
+  - Choose a variable that count
+  - Initialize outside the loop
+  - Setup end test (variable)
+  - Construct block
+    - Change variable
+  - What to do when done
+
+- *Flow chart*
+  - Flow chart is how to structure the code
+
+#+BEGIN_SRC python
+x = 16                #Initialize variable
+ans = 0               #Variale that count
+while ans*ans < x:    #Setup end test or condition
+  ans = ans + 1       #Change variable
+print ans             #Display 'ans' when done
+#+END_SRC
+
+Every looping construct should always be able to terminate and it should give a reasonable answer
+
+** Defensive programming
+ - Make sure there is no syntax error or any infinite loop
+ - Always check user's input for mistakes
+
+e.g
+#+BEGIN_SRC python
+x = 16
+ans = 0
+if x >= 0;
+  while ans*ans < x:
+    ans = ans + 1
+  if ans*ans != x:
+    print x, ' is not a perfect number'
+  else: print ans
+else: print x, ' is a negative number'
+#+END_SRC
+
+** Exhaustive enumeration
+- Try all reasonable values until you find the solution
+
+  e.g
+  #+BEGIN_SRC python
+  x = 10
+  i = 1
+  while i<x:
+    if x%i == 0:
+      print 'divisor ', i
+    i = i + 1
+  #+END_SRC
+
+** For loop
+- for loop updates the variable automatically
+  - It allows to be sure that /For loop/ is going to terminate
+
+  syntax
+  #+BEGIN_EXAMPLE
+  for <var> in <some collection>:
+  block of code
+  #+END_EXAMPLE
+  Using that variable as placeholder have it walk through collection that starting at the first thing, execute that code, then next thing, execute that code, and so on
+
+ e.g
+#+BEGIN_SRC python
+x = 10
+for i in range(1, x):   #It gives all integer from 1 up to x
+  if x%i == 0:
+    print 'divide ', i
+#+END_SRC
+
+** Range
+- Range is built-in python function
+- It gives all the integers from lower to upper
+
+  e.g
+  #+BEGIN_SRC python
+  range(1, 10)  #It gives integer from 1 to 10
+  #1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+  #+END_SRC
+
+** Tuple
+- This is an ordered sequence of elements
+- It is immutable
+- Representation of tuple is parenthesis (i.e round bracket), followed by a sequence of element, separated by commas and followed by a close parenthesis bracket
+  e.g t = (1, 2, 3, 4)
+- *Selection* using to select the positions or index, e.g t[1]
+- *Slicing* using to pick up pieces, e.g t[1:3]
+
+e.g
+#+BEGIN_SRC python
+test = (1, 2, 3, 4)
+test[0]
+# 1
+
+test[3]
+# 4
+
+test[-1]
+# 4
+
+test[1:3]
+#(2, 3)
+#+END_SRC
+
+** String
+- It is an ordered sequence of characters
+- String also support selection and slicing
+* Lecture 4
+- *Decomposition*: is a way of putting structure onto the code (way of breaking the code up into modules)
+- *Abstraction*: means to give names to things, so that name captures the core of what a function or whole program does (Abstraction is hiding details)
+
+- *Functions*: Function is a block of organized, reusable code that is used to perform a single, related action
+  - It break up into modules
+  - Suppress detail
+  - It creates new primitives
+
+  Syntax:
+    - *def* is a keyword (Definition or define)
+      - It followed by name (This name is referred when we want to use this function)
+      - Function name has open and close parenthesis with variable name inside it, i.e name(x)
+      - *name(x)* defines formal parameters of function
+    - *Specification* is /what/ does this function do
+    - *return* (keyword)
+    - Every possible path through code must end in a *return*
+
+    e.g
+    #+BEGIN_SRC python
+      def sqrt(x):
+        """Return the square root of x, if x is a perfect square.
+             Prints an error message and returns None otherwise"""   #it is a specification
+        ans = 0
+        if x >= 0:
+          while ans*ans < x: ans = ans + 1
+          if ans*ans != x:
+              print x, 'is not a perfect square'
+              return None
+          else: return ans
+        else:
+          print x, 'is a negative number'
+          return None
+
+       #sqrt(16)
+       #It will display 4
+    #+END_SRC
+
+  - To call a function, pass in values for parameters in parenthesis next to function's name, i.e sqrt(16)
+    - It binds x to 16 (this binding is local, it only holds within the confines of the code of this procedure)
+    - Inside the function block every bindings are local
+    - *Local bindings*: do not affect global bindings
+
+- *Recursion*: Break the problem into simpler version of same problem, plus some steps to add their solutions to make solution of the whole program
+  - Base case: It is the simplest possible solution to the problem
+  - Inductive step (or recursive step) break the problem into a simpler version of the same problem and some other steps
+
+  e.g
+  #+BEGIN_SRC python
+    def isPalindrome(s):
+        """Returns True if s is a palindrome and False otherwise."""
+        if len(s) <= 1: return True
+        else: return s[0] == s[-1] and isPalindrome(s[1:-1])
+
+    def isPalindrome1(s, indent):
+        """Returns True if s is a palindrome and False otherwise"""
+        print indent, 'isPalindrome called with', s
+        if len(s) <= 1 :
+            print index, 'About to return True from base case'
+            return True
+        else:
+            ans = s[0] == s[-1] and isPalindrome1(s[1:-1], indent + indent)
+            return ans
+  #+END_SRC
+* Lecture 5
+- Computers are supposed to be good for crunching numbers
+
+- Python has two different type of numbers
+  - *int*
+  - Python unlike some languages have arbitrary precision integers
+  - *float*
+    - IEEE 754 (Floating point)
+      - Variant of scientific notation
+      - /Mantissa and exponent/: Represent a floating point number as pair of mantissa and an exponent
+        - Mantissa is between one and two (i.e 1 <= mantissa < 2)
+        - Exponent is in the range, -1022 to +1023
+- In python to display something, it uses the built-in function repr (i.e repr())
+  - *Representation*: (repr()) converts a number to a string and then display that string
+  - In *floats* it rounds it to seventeen (17) digits
+
+    e.g
+    #+BEGIN_SRC python
+    x = 0.1
+    x
+    #It will display 0.10000000000000001
+    #+END_SRC
+
+- *Successive approximation* has rough structure
+  #+BEGIN_EXAMPLE
+  guess = initial guess
+  for item in range(100):
+    if f(guess) close enough: return guess
+    else: guess = better guess
+  #+END_EXAMPLE
+
+- *Bisection method* is a root-finding method
+
+* Lecture 6
+
+** Bisection method
+- It is related to binary search
+- It finds the square root
+  - The basic idea that we had some sort of a line and the answer was somewhere between that line
+    - This is a kind of recursive thinking
+
+e.g
+#+BEGIN_SRC python  def squareRootBi(x, epsilon):
+      """Assumes x >= 0 and epsilon > 0
+         Return y s_t. y*y is within epsilon of x"""
+      assert x >= 0, 'x must be non-negative, not' + str(x)
+      assert epsilon > 0, 'epsilon must be positive, not' + str(epsilon)
+      low = 0
+      high = x
+      guess = (low + high)/2.0
+      ctr = 1
+      while abs(guess**2 - x) > epsilon and ctr <= 100:
+          if guess**2 < x:
+              low = guess
+          else:
+              high = guess
+          guess = (low + high)/2.0
+          ctr += 1
+      assert ctr <= 100, 'Iteration count exceeded'
+      print 'Bi method. Num. iterations:', ctr, 'Estimate', guess
+      return guess
+
+  def testBi():
+      print '  squareRoot(4, 0.0001)'
+      squareRootBi(4, 0.0001)
+      print '  squareRoot(9, 0.0001)'
+      squareRootBi(9, 0.0001)
+#+END_SRC
+
+- *Assert statements*: is expecting to always be true at that point in the code, if it is false at run time, an assertion failure results, which typically causes the program to crash
+- *Regression testing*: is done to make sure that old code still works once the new code changes are done
+
+** Non-scalar
+- We have done two non-scalar types: *Tuples* and *Strings*
+- Tuples and strings are immutable
+- *Mutable types*: Things which can change (i.e lists)
+
+** List
+*Lists*: different from string in two ways
+  - It is mutable
+  - The values need not be characters (They can be number, characters, strings and can other lists)
+  - e.g: techs = ['MIT', 'cal tech'] (It takes variable techs and it makes point to a list with two items in it: 'MIT' and 'cal tech'
+  - *append* is method using to add new item in list
+
+    e.g
+    #+BEGIN_SRC python
+      univs = []  # This is an empty list
+      univs.append('teach') # Now new string teach is added in list
+
+      # It can append another list inside list
+      teachs = ['MIT', 'python']
+      test = []
+      test.append(teachs) # It will add teachs list inside test list (i.e [['MIT', 'python]])
+
+      # We can also add two lists inside list
+      learn = ['git', 'coding']
+      test.append(learn) # Now test = (equals to) [['MIT', 'python'], ['git', 'coding']]
+    #+END_SRC
+
+  - We can iterate any list with for loop
+
+    e.g
+    #+BEGIN_SRC python
+      teachs = ['MIT', 'python']
+      learn = ['git', 'coding']
+      test = []
+
+      test.append(teachs)
+      test.append(learn)
+
+      for i in test:
+          print i
+          for e in i:
+              print e
+
+      # ['MIT', 'python']
+      # Mit
+      # python
+      # ['git', 'coding']
+      # git
+      # coding
+    #+END_SRC
+
+  - *remove*: is the list method used to remove object from the list
+    - It takes two arguments list name and value which want to remove (e.g learn.remove('coding'))
+      - It will search through the list until first time it finds value and then it will remove it from li
+* Lecture 7
+** List
+- We have done two methods *append* and *remove*
+- *Assign to a list*
+  - We can also assign to a list or to an element of list (e.g ls[1] = 44
+
+    e.g
+    #+BEGIN_SRC python
+      ls = ['element', 'number', 5, 4, 'anything']
+      ls[3] = 'replaced'  #ls[3], 3 is index of list
+      #Now new list `ls` is ['element', 'number', 5, 'replaced', 'anything']
+    #+END_SRC
+
+** Dictionaries
+- Dictionaries are also /mutable/ and /heterogeneous/ like lists are (but elements in lists have an order, dictionary don't)
+- Every element of a dictionary as a key value pair(i.e <key>: <value>), where the keys are used as indices
+
+e.g
+#+BEGIN_SRC python
+dic = {'name': 'john', 'lecture': 7, 'course': 'MIT', 1: 'one'}
+#+END_SRC
+
+- Dictionaries are implemented using a technique called *Hashing*
+  - It allows us to retrieve keys in constant time
+
+** Pseudo code
+- Pseudo is description of steps, but not in a particular programming language
+
+** Efficiency
+- Orders of growth
+- Choice of algorithm
+
+* Lecture 8
+- Canonical algorithms and different class of complexity
+- Iterative exponentiation
+- Rate of growth as the size of the of problem growth
+  - *Asymptotic notation*: are languages that allow us to analyze an algorithm's running time by identifying its behavior as input size for the algorithm increases (Also known as algorithm's growth rate)
+  - *Big oh notation*: Upper limit to the growth of a function as the input gets large
+    e.g: f of x is in big oh of n squared ( i.e f(x)eOn2 ) It says that function, f of x, is bounded above, there is upper limit on it, that growth no faster than quadratic in n squared
+- *Linear algorithm* tend to be things where, at one pass-through, to reduce the problem by constant amount, by one
+- *Log algorithm* typically is one where you cut the size of the problem down by some multiplicative factor
+- These are orders of growth (e.g A quadratic algorithm could run faster than a linear algorithm, It depends on what the input is or what the particular cases are)
+** Summary
+- Recognize different classes of algorithm
+- We have seen log, linear, quadratic, exponential
+* Lecture 9
+- There are sorting algorithms: *Selection sort*, *Bubble sort*
+** Selection Sort
+*** Algorithm
+- Search smallest element in list
+- Swap searched element with index 0 of list
+- Search second smallest element
+- Swap searched element with index 1 of list
+- Repeat same steps while index equal to length of list - 1
+*** Pseudo code
+- [X] Base case
+  - If length of list <= 1: return ls
+- [X] Recursive case
+  - min_index = get_min_index(ls)
+  - list[0], list[min_index] = list[min_index], list[0]
+  - Return [list[0]] + selection_sort(ls[1:])
+
+
+** Bubble Sort
+*** Algorithm
+- Start comparing from first two elements
+- If first element is greater than second element swap first with second
+  - Repeat this for all items of list
+- Repeat above steps until there are no swaps to do
+*** Pseudo code
+- [X] Base case
+  - if not have_changed: return list
+  - if len(list) <= 1: return list
+  - for i in range(len(ls)-1):if ith element less than ith + 1 element swap them
+- [X] Recursive case
+  - bubble_sort(ls, have_changed)
+* Lecture 10
+** Divide and Conquer
+- Binary search is the example of divide and conquer algorithm
+- It split the problem into saveral sub-problems of the same type
+  - Each of sub-problems solve independently and them combine those solutions
+** Merge Sort
+- Merge sort is the old algorithm invented in 1945 by John Von Neuman
+- It is the sorting technique based on divide and conquer
+- *Merge short algorithm*
+  - Divide the list in half
+    - Keep dividing each of those lists in half (Continue until we have singleton lists)
+  - Then combine them by doing emerge the sub-lists
+** Exceptions
+  - *try/except block*: This try to execute instructions
+    - If it can succesfully execute instructions than it will skip the except block
+    - If raises an exception than except block will run
+* Lecture 11
+** Validation
+- Validation is a process to uncover problems and increase confidence
+- It is combination of *testing* and *reasoning*
+
+** Testing
+- Compare input output pair to a specification
+- Two classes of testing /unit testing/ and /integration testing/
+  - *Unit testing*: Validate each piece of program independently
+  - *Integration testing*: check the overall program is working
+
+** Debugging
+- Debugging is the process of ascertaining why the program is not working
+- Study the events that led to an error
+- There are two aspects /function/ and /performance/
+- /Print statement/ and /reading/ are best tools to debugging
+
+** Defensive Programming
+- Writing your program in such way that it facilitate both validation and debugging
+* Lecture 12
+** Debugging
+- Things should be look at when looking for bugs
+  - Reversed order of arguments
+  - Spelling
+  - Initialization
+  - Object vs value equality
+  - Aliasing: Deep vs shallow copy
+  - Side effects
+
+** Optimization Problems
+- Function to maximize or minimize
+- Set of constraints
+
+*** Classic Optimization Problems
+- Shortest path problem
+- Traveling sales person
+- Bin packing
+- Sequence of alignment problems
+- Knapsack problem
+- Problem reduction
+
+** Knapsack Problem
+- Given set of things more than fit into the knapsack and trying to decide which thing to take and which thing to leave
+- *0/1 knapsack problem*
+  - We have n items and at every step we have to take all items or none of the item
+    - Each item has weight and value and try to optimize
+
+** Problem Reduction
+- Given some problems to solve, that never seen before
+  - Find is it an instance of some problem that already solved
+  - We take new problem and map it into an old problem so we can use old solution
+
+** Dynamic Programming
+- Invented by mathematician called Bellman
+- Overlapping sub-problems: /optimal sub-structure/
+
+* Lecture 13
+** Dynamic Programming
+- *Overlapping sub-problems*
+  - /Memoization/: store result when first time it computed
+    - Then look it up the sub-sequent time we need it
+
+    e.g
+    #+BEGIN_SRC python
+      def fastFib(n, memo):
+          global numCalls
+          numCalls += 1
+
+          print("fib1 called with ", n)
+
+          if not(n) in memo:
+              memo[n] = fastFib(n-1, memo) + fastFib(n-2, memo)
+
+          return memo[n]
+
+
+      def fib1(n):
+          memo = {0: 1, 1: 1}
+
+          return fastFib(n, memo)
+    #+END_SRC
+
+- *Optimal Substructure*
+  - Global optimal solution can be constructed from optimal solutions to sub problems
+* Lecture 14
+- *Dynamic Programming* trades time for space
+  - Do not intimidated by exponential problems
+  - Dynamic programming is broadly useful
+  - Problem reduction
+
+- *Module*
+  - Collection of a related functions
+  - Refer to a function using dot notation (e.g math.sqrt(number))
+
+- *Classes*
+  - *Object-oriented programming*
+    - *Object*: collection of data and functions
+      - Pass object to another program, that program can also perform operations on the object
+    - Generating user-defined types
+    - *Class*: Collection of objects
+      - All the built-in types are built-in classes
+
+- *Data abstraction*
+  - Abstract data-types
+
+- *Message passing metaphor*
+  - One object can pass message to another object
+    - Another object responds by executing methods on object (e.g list.sort())
+* Lecture 15
+- *Abstract data type*
+  - Giving ability to create data types same way we have some built-in (i.e int, float, str)
+
+** Class
+- Template for creating instances of an object
+- Instance has some internal attributes
+- *__init__*: when call the class definition init will apply on arguments
+  - Creates an instance
+  - Use ~self~ to refer instance
+- *Data hiding*: one can only access instance values through defined methods (/python does not do this/)
+
+** Methods of classes
+- __init_: runs when object of a class is created_
+- __str__: printed representation
+- __cmp__: use to compare values
+- __eq__: checking equality
+
+** Operator Overloading
+- Same operators to have different meaning according to context
+
+* Lecture 16
+** Inheritance
+- Inherit attributes and behavior methods from another class
+
+e.g
+#+BEGIN_SRC python
+  class Person(object):
+      def __init__(self, family_name, first_name):
+          self.family_name = family_name
+          self.first_name = first_name
+
+      def familyName(self):
+          return self.family_name
+
+      def firstName(self):
+          return self.first_name
+
+      def __cmp__(self, other):
+          return cmp((self.family_name, self.first_name),
+                     other.family_name, other.first_name)
+
+      def __str__(self):
+          return "<Person is: {} {}>" .format(self.first_name, self.family_name)
+
+      def say(self, toWhom, something):
+          return self.first_name + ' ' + self.family_name + ' says to ' + toWhom.firstName() + ' '
+
+      def sing(self, toWhom, something):
+          return self.say(toWhom, something + ' tra la la')
+
+
+  class MITPerson(Person):
+      nextIdNum = 0
+
+      def __init__(self, family_name, first_name):
+          Person.__init__(self, family_name, first_name)
+          self.idNum = MITPerson.nextIdNum
+          MITPerson.nextIdNum += 1
+
+      def getIdNum(self):
+          return self.idNum
+
+      def __str__(self):
+          return "<Person is: {} {}" .format(self.first_name, self.family_name)
+
+      def __cmp__(self, other):
+          return cmp(self.idNum, other.idNum)
+#+END_SRC
+
+- New class is called derived (or child) class and from which it inherit is called base (or parent) class
+
+** Shadowing
+- Occurs when a variable declared with inner class has same name as a variable declared in outer class
+- Overriding
+- Implementation in the subclass overrides (replaces) implementation in the super class by providing a method that has same name and same return type as method in parent class
+
+* Lecture 17
+- *Informal problem description to rigorous problem statement*: First understand problem then move on to the code
+  - Be careful about what question you asking and every time they may have different answers
+
+- *Computational models*: Some programs are modeling actual world
+  - If writing a program to try and help us decide what stocks to buy or sell, then we try to model the stock market in some sense
+  - In every problem we build a software and hope that it has same ability to actual situation
+
+- *Exploiting randomness*: In world there is one the sad things or happy things
+  - Things happen in either at random or seemingly at random
+  - We have to assume that they really are random
+  - Building model of weather that assume a certain amount of randomness in it
+
+- *Making sense of data*: Building model of what the customers might buy,
+  - That model going to take entire history of what customer's have brought in the past
+  - So this have lot of data about what's happened in past
+
+- *Evaluating quality of answers*: How do you go about looking at results,
+  - And deciding whether to believe them or not
+
+- *Simulate random walk*: Try and build model that is showing it is the real world and simulate what's going on and random walk
+  - Random walks are very general, are used to address lot of real problems
+
+- *Default values*: Python allows us default values of parameters
+  - If call a method without last argument, rather than getting an error it chooses the default value
+* Lecture 18
+- *Brownian Motion*: Random motion of particles suspended in a fluid (i.e liquid or gas) resulting from there collision with fast moving atoms in liquid
+  - It use to model the path traced by a molecule as it travels in a liquid or a gas
+  - Used in biology to do things like model kinetics
+
+- *Pylab*: Designed to provide a python interface to a lot of functionality you get in /Matlab/
+  - Produces all beautiful plots and then does not display them until type *show*
+    - At the end of every program, last thing to execute should be /show/
+    - If /show/ written in middle of program it stops rest of the code (it will not execute next line)
+
+- *Numpy*: Gives lot of operations on numbers, numbered things
+  - Extension to python, adding support for large, multi-dimensional arrays, along with large library of high-level mathematician functions
+  - Most programming language /arrays/ meaning different, In Numpy *Array* is called matrix
+* Lecture 19
+- *Biased random walks*: is a time path process in which an evolving variable jumps from current state to one of various potential new states
+  - Unlike in a pure random walk, the probabilities of the potential new states are unequal
+
+- *Polymorphism*: is based on greek words poly (many) and morphism (forms)
+  - This is a provision of a single interface to entities of different types
+
+- *Distribution of data*: is a listing or function showing all the possible values of data and how often they accurs
+  - Distribution of numerical data is organized, they are ordered from smallest to largest, broken into reasonably sized groups and put into graph
+
+- *Simulation*: grew hand in hand with the development of the computers from very beginning
+  - Simulation has become a useful part of mathematical modeling systems in physics
+  - It can be used to explore and gain new insights into new technology
+    - and to estimate performance of systems too complex for analytical solutions
+  - It can be large-scale programs that run for hours or days on network-based groups of computers
+  - First development of computer simulation was /Manhattan Project/
+    - It was a research and development undertaking during World War 2 that produced the first nuclear weapons
+    - /Monte carlo simulation/: are broad class of computational algorithms that rely on repeated random sampling to obtain numerical results
+  - Use simulation when we really can't get a closed from analytic solution
+  - When we simulating anything, is we are attempting to generate a sample of representative scenarios
+
+* Lecture 20
+** Different ways to classify simulation models
+- Stochastic or Deterministic
+  - /Stochastic/ is a simulation that traces evolution of variables that can change randomly with certain probabilities
+  - /Deterministic/ simulation contain no random variables and no degree of randomness (get same result every time)
+
+- Static vs Dynamic
+  - In /Dynamic/ situation time plays a role
+  - In /Static/ situation there is no issue with time
+
+- Discrete vs Continuous
+  - /Discrete/ data can only take particular values
+    - There may an infinite number of those values
+  - /Continuous/ data are not restrict to defined separate values
+    - But value over a continuous
+
+** Monte Carlo Simulation
+- It is a computerized mathematical technique that allows to account for risk in quantitative analysis and decision making
+
+- *Inferential Statistics*: try to infer from the sample data what the population might think
+  - Inferential statistics to make inferences from our data to more general conditions
+
+- *Xrange()*: Same as range function but it does not use as much space
+  - It creates the values as you need them with a special technique /yielding/
+
+* Lecture 21
+- *Spring Constant*: is a number that represents how much force it takes to stretch a material with larger spring constants are stiffer
+  - Some springs are not at all elastic, they are hard but break easily before they bend or stretch
+
+  - *Hooke's Law*: is a principle of physics that states that the force /F/ needed to compress or extend a spring by some distance /X/ is proportional to the distance
+    - That is F = kX
+      - Where k is a constant factor characteristic of the spring and X is small compared to total possible deformation
+
+- *Objective Function*: is an equation to be optimized given certain constraints and with variables that need to be minimized or maximized using nonlinear programming techniques
+
+  - *Least Squares*: is a standard approach in regression analysis to the approximate solution of over-determined systems
+    - The overall solution minimizes the sum of the squares of the errors made in the results of every single equation
+
+- *Polyfit*: is build-in function of /pylab/
+  - Given some points, finds the polynomial that gives best least squares approximation to those points
+
+- *Linear Regression*: is an approach for modeling the relationship between a scalar dependent variable y and one or more explanatory variables (or independent variables) denoted X
+
+- *Lurking Variable*: is a variable that is not included as an response variable in the analysis but can affect the interpretation of relationships between variables
+* Lecture 22
+** Distributions
+- *Normal*: (Gaussian distribution) is very common continuous probability distribution
+  - Are important in statistics and are often used in the natural and social sciences to represent real-valued random variables whose distributions are not known
+  - Sometimes it called the *bell curve*, however many other distributions are bell-shaped
+
+  - It can be describe with two numbers
+    - *Mean*: in /mathematics/, it has several different definitions depending on the context
+      - In probability and statistics, mean and expected value are used synonymously to refer to one measure of random variable characterized
+
+    - *Standard deviation*: is used to quantify the amount of variation of dispersion of a set of data values
+
+  - *Stable Distribution*: A random variable is said to be stable if a linear combination of two independent copies of random sample has same up to location and scale parameters
+
+- *Uniform*: is a family of symmetric probability distributions
+  - Such that for each member of the family, all intervals of the same length on the distribution's support are equally probable
+  - Support is defined by two parameters, a and b, which are its minimum and maximum values
+
+- *Exponential*: describes the time between events in a poisson process
+  - A process in which events accur continuously and independently at a constant average rate
+
+** Misuse of data
+- Statistics are supposed to make something easier to understand but when used in a misleading fashion can trick the casual observer into believing something other than what the data shows
+- It accurs when a statistical argument asserts a falsehood
+- In some case, the misuse may be accidental
+- Misuses can be easy to fall into
+  - Professional scientists, even mathematician and professional statisticians, can be fooled by even some simple methods, even if they are careful to check everything
+
+* Lecture 23
+- *Texas sharpshooter fallacy*: is an informal fallacy which is committed when differences in data are ignored, but similarities are stressed
+  - Name comes from a joke about a *Texan* who fires some gunshots at the side of a barn,
+    - then paints a target centered on tightest cluster of hits and claims to be a sharpshooter
+
+- *Indexed portfolios*: want to own all of the stocks, just betting market as a whole without thinking I can pick winners and losers
+  - If the stock market goes up, I make money
+  - If stock market goes down, I lose money
+  - They are attractive in that
+    - They don't require lot of thought
+    - They have low expense ratio, since easy to implement
+
+- *Managed portfolios*: find somebody who is smart and pay them fair amount of money and in return they will pick winners for us
+
+- *Efficient-market hypothesis*: is a theory in financial economics that states that an asset's prices fully reflects all available information
+  - A direct implication is that it is impossible to beat the market consistently on a risk-adjusted basis since market prices should only react to new information or changes in discount rates
+
+- *lambda*: Creation of anonymous functions (i.e functions that are not bound to a name) at runtime
+  - Normal functions are define using def keyword, anonymous functions are defined using lambda keyword
+
+    e.g
+    #+BEGIN_SRC python
+      def def_demo(value):
+          return value ** 2
+
+
+      print(def_demo(8))  # 64
+
+      lambda_demo = lambda value: value ** 2
+
+      print(lambda_demo(8))  # 64
+    #+END_SRC
+
+- *Multiplicative*: if the amount of change is proportional to the current size,
+
+- *Additive*: assumes that task performance is the sum of sequential and independent processes
+
+* Lecture 24
+** What Do Computer Scientists Do?
+- They think computationally
+- Computational thinking will be a fundamental skill used by everyone in the world by the middle of the 21st century
+- Just like: *reading*, *riting*, and *rithmetic*
+
+- *Computational thinking*: is the thought processes involved in formulating a problem and expressing its solutions
+  - in such a way that a computer, human or machine, can effectively carry out
+  - It is an iterative process based on three stages
+    - Problem formulation (*abstraction*)
+    - Solution Expression (*automation*)
+    - Solution Execution and Evaluation (*analyses*) captured by the figure to the right
+
+    - *Abstraction*: is a technique for arranging complexity of computer systems
+      - It works by establishing a level of complexity on which a person interacts with the system, suppressing the more complex details below the current level
+      - Programmers works with an idealized interface (usually well defined) and can add additional levels of functionality that would otherwise be too complex to handle

@@ -1,0 +1,618 @@
+* JavaScript
+** Introduction
+- JavaScript is Famous, typically for some bad quality
+- It used by an incredible number of high-profile applications
+- Created in 1995 by Brendan Eich
+- It was originally going to be called LiveScript
+- It has no concept of input or output
+- Designed to run as scripting language in a host environment
+  - Host environment is the browser, but JavaScript interpreter can also find in
+    - Adobe Acrobat, Adobe Photoshop, SVG images, Yahoo's Widget engine, server-side environments etc
+
+** Overview
+- JavaScript is multi-paradigm, dynamic language with types and operators, standard build-in objects and methods
+- Syntax is based on java and C languages
+- Supports object-oriented programming with object prototypes, instead of classes
+  - Also supports functional programming
+    - Functions are objects, giving functions the capacity to hold executable code and be passed around like any other object
+  - JavaScript programs manipulate values and values belong to a type
+    - *Number*
+    - *String*
+    - *Boolean*
+    - *Object*
+      - *Function*
+      - *Array*
+      - *Date*
+      - *RegExp*
+    - *Symbol*
+    - *null*
+    - *undefined*
+
+** Types
+- *Numbers*: are "double-precision 64-bit format IEEE 754 values", according to spec
+  - There is no such thing as an integer
+  - Integer values are treated as 32-bit integer
+
+  - *Math* is an build-in object which provides advanced mathematical functions and constants
+
+    e.g
+    #+BEGIN_SRC js
+    Math.sin(3.5); // Give sin of 3.5 = -0.35078322768961984
+    Math.sin(2); // 0.9092974268256817
+
+    Math.PI; // 3.14159265
+    #+END_SRC
+
+  - *parseInt()*: convert a string to an integer
+    - Takes base for the conversion as an optional second argument
+
+      e.g
+      #+BEGIN_SRC js
+        parseInt('123', 10); // 123
+        parseInt('010', 10); // 10
+
+        parseInt('0x10'); // 16
+
+        parseInt('11', 2); // 3 It converts binary number to an integer
+      #+END_SRC
+
+  - *parseFloat*: parse floating point numbers
+    - Always uses base 10
+
+  - *unary + operator*: uses to convert values to numbers
+
+    e.g
+    #+BEGIN_SRC js
+    + '42'; // 42
+    + '0x10' // 16
+    #+END_SRC
+
+  - *NaN*: Not a Number is returned if string is non-numeric
+
+  - *isNan()*: returns true if non-numeric, false otherwise
+
+    e.g
+    #+BEGIN_SRC js
+      isNaN(NaN); // true
+      isNaN(parseInt('g', 16)); // true
+      isNaN(parseInt('f', 16)); // False
+    #+END_SRC
+
+- *Strings*
+  - Sequences of Unicode characters
+    - UTF-16 code units, each unit is represented by 16-bit number
+    - Each unicode character is represented by either 1 or 2 code units
+    - Some methods allow to manipulate the string and access information about the string
+
+      e.g
+      #+BEGIN_SRC js
+        'hello'.length; // 5
+        'hello'.charAt(0); // "h"
+        'hello, world'.replace('hello', 'goodbye'); // "goodbye, world"
+        'hello'.toUpperCase(); // "HELLO"
+      #+END_SRC
+
+- *null*: non-value is only accessible through null keyword
+
+- *undefined*: uninitialized value
+
+- *boolean*: type true and false (both are keywords)
+  - Any value can be converted to a boolean
+    - /false/, /0/, /empty string("")/, /NaN/, /null/, /undefined/ all become false
+    - All other values are true
+  - Boolean operations are
+    - && (logical and), || (logical or), ! (logical not)
+
+** Variables
+- There are three keywords to declare variables
+  - *let*: allows to declare block-level variables
+
+    e.g
+    #+BEGIN_SRC js
+    // myLetVariable is *not* visible out here
+
+    for (let myLetVariable = 0; myLetVariable < 5; myLetVariable++) {
+        // myLetVariable is only visible in here
+    }
+
+    // myLetVariable is *not* visible out here
+    #+END_SRC
+
+  - *const*: allow to declare variable whose values are never change
+    - Variable is available from the function block it is declared in
+
+      e.g
+      #+BEGIN_SRC js
+        const pi = 3.14; // Variable Pi is set
+        pi = 1; // Type error: Assignment to constant variable
+      #+END_SRC
+
+  - *var*: It does not have any limited condition like /let/ and /const/ have
+    - Variable declared with var keyword is available from function block it is declared in
+
+      e.g
+      #+BEGIN_SRC js
+        // myVarVariable *is* visible out here
+
+        for (var myVarVariable = 0; myVarVariable < 5; myVarVariable++) {
+            // myVarVariable is visible to the whole function
+        }
+
+        // myVarVariable *is* visible out here
+      #+END_SRC
+
+- If variable defined using var keyword in compound statement, it will be visible to entire function
+
+** Operators
+- Numeric operators +, -, *, / and %
+
+- Values assign using =
+
+- use ++ to increase and -- to decrease
+
+- + operator also does string concatenation
+
+- If add a string to a number (or other value) everything is converted
+
+- *Comparisons*: <, >, <=, >=, ===, !==
+  - Works for both strings and numbers
+
+** Control Structures
+- *Conditional Statements*: if and else
+
+    #+BEGIN_SRC js
+      var name = 'kittens';
+
+      if (name === 'puppies') {
+          name += '!';
+      } else if (name === 'kittens') {
+          name += '!!!';
+      } else {
+          name = '!' + name;
+      }
+
+      name === 'kittens!!!'; // true
+    #+END_SRC
+
+- *while and do-while* loops:
+
+    #+BEGIN_SRC js
+      while (true) {
+          // an infinite loop!
+      }
+
+      var input;
+
+      do {
+          input = get_input();
+      } while (inputIsNotValid(input));
+    #+END_SRC
+
+- *for* loop is same as in c and java
+
+    #+BEGIN_SRC js
+      for (var i = 0; i < 5; i++) {
+          // will execute 5 times
+      }
+
+      for (let value of array) {
+          // do something with value
+      }
+
+      for (let property in object) {
+          // do something with object property
+      }
+    #+END_SRC
+
+- *switch statement*: for multiple branches based on a number or string
+
+    #+BEGIN_SRC js
+      switch (action) {
+      case 'draw':
+          drawIt();
+          break;
+      case 'eat':
+          eatIt();
+          break;
+      default:
+          doNothing();
+      }
+    #+END_SRC
+
+** Objects
+- Collection of name-value pairs, similar to Dictionaries in Python
+  - This allow to build data structures of arbitrary complexity
+
+- Two ways to create an empty object
+
+    #+BEGIN_SRC js
+      var obj = new Object();
+
+      var obj = {};
+    #+END_SRC
+
+- Can create object inside an object
+
+  #+BEGIN_SRC js
+    var obj = {
+        name: 'Carrot',
+        'for': 'Max',
+        details: {
+            color: 'orange',
+            size: 12
+        }
+    }
+
+
+    // Access Attribute
+
+    obj.name; // Carrot
+    obj.details.color; // orange
+    obj['details']['size']; // 12
+  #+END_SRC
+
+- Create an object prototype, Person and instance of that prototype
+
+  #+BEGIN_SRC js
+    function Person(name, age) {
+        this.name = name;
+        this.age = age;
+    }
+
+
+    // Define an object
+    var You = new Person('You', 24);
+    // Creating a new person names "You"
+
+
+    You.name; // You
+    // or
+    You['name'] // You
+
+    You.name = "Simon";
+    You.name; // Simon
+
+    var name = You.name;
+    name; // Simon
+  #+END_SRC
+
+** Arrays
+- Arrays are special type of object
+- Numerical properties can be accessed using []
+- Having magic property *length*
+
+#+BEGIN_SRC js
+  var a = new Array();
+  a[0] = 'dog';
+  a[1] = 'cat';
+  a.length; // 2
+
+  var a = ['dog', 'cat', 'hen'];
+  a.length; // 3
+
+  a[100] = 'fox';
+  a.length; // 101
+
+
+  // If query a non-existent array index
+
+  typeof a[90]; // undefined
+#+END_SRC
+
+- *forEach()* use for iterating over an array
+
+  #+BEGIN_SRC js
+    var a = ['dog', 'cat', 'hen']
+
+    a.forEach(function(item) {
+        // Do something with current item
+    });
+  #+END_SRC
+
+- Arrays Methods
+  - *a.toString()*: Returns a string of each element separated by commas
+
+  - *a.join(sep): Converts array to a string with values delimited by the sep param
+
+  - *a.pop()*: Removes and returns the last item
+
+  - *a.reverse()*: Reverses the array
+
+  - *a.slice(start[, end])*: Returns a sub-array
+
+** Functions
+- Core component in understanding JavaScript
+
+- Function can take 0 or more named parameters
+  - Body can contain as many statements as you like and can declare its own variables which are local
+  - *return* statement can be used to return a value, terminating the function
+  - Empty return with no value returns undefined
+
+    #+BEGIN_SRC js
+      function add(x, y) {
+          var total = x + y;
+          return total;
+      }
+
+
+      add(2, 3); // 5
+      add(2, 3, 6); // 5, Added first two; 6 was ignored
+    #+END_SRC
+
+- *arguments*: Function have access to an additional variable inside their body
+
+  e.g
+  #+BEGIN_SRC js
+    function add() {
+        var sum = 0;
+
+        for (var i = 0, i < arguments.length; i++){
+            sum += arguments[i]
+        }
+
+        return sum;
+    }
+
+
+    add(2, 3, 4, 5); // 14
+  #+END_SRC
+
+- *Spread*: Pass any number of arguments into the function
+  - Used in function declaration with format: *...[variable]*
+
+    e.g
+    #+BEGIN_SRC js
+      function add(...args) {
+          var sum = 0;
+
+          for (let value of args) {
+              sum += value;
+          }
+
+          return sum
+      }
+
+
+      add(2, 3, 4, 5); // 14
+    #+END_SRC
+
+** Custom Objects
+- Objects are collection of data and methods that operate on data
+- JavaScript uses functions as classes
+
+  e.g
+  #+BEGIN_SRC js
+    function makePerson(first, last) {
+        return {
+            first: first,
+            last: last
+        };
+    }
+
+    function personFullName(person) {
+        return person.first + ' ' + person.last;
+    }
+
+    function personFullNameReversed(person) {
+        return person.last + ', ' + person.first;
+    }
+
+
+    s = makePerson('Simon' 'Willison');
+    personFullName(s); // Simon Willison
+    personFullNameReversed(s); // Willison, Simon
+
+    // or
+
+    function makePerson(first, last) {
+        return {
+            first: first,
+            last: last,
+
+            fullName: function() {
+                return this.first + " " + this.last;
+            },
+
+            fullNameReversed: function() {
+                return this.last + ", " + this.first;
+            }
+        };
+    }
+
+
+    s = makePerson("Simon", "Willison");
+    s.fullName(); // Simon Willison
+    s.fullNameReversed(); // Willison, Simon
+  #+END_SRC
+
+- *this* keyword: refers to current object, used inside function
+** Selecting DOM Elements
+- *Selectors*: selector methods accept one or more comma-separated selectors to determine what element or elements should be returned
+  - To select all element in a document whose CSS class is warning
+
+    #+BEGIN_SRC js
+      var element = document.querySelectorAll(".warning");
+
+      element; // returns NodeList
+    #+END_SRC
+
+  - Also query by ID
+
+    #+BEGIN_SRC js
+      var el = document.querySelector("#main")
+    #+END_SRC
+
+  - Can use any CSS selectors with *querySelector()* and *querySelectorAll()* methods
+
+  - *NodeList*: objects are collections of nodes such as those returned by properties such as Node.childNodes and document.querySelectorAll() method
+    - NodeList if not an Array, it is possible to iterate on using forEach()
+    - In some cases, NodeList is a live collection, which means that changes in DOM are reflected in the collection
+    - In other cases, NodeList is a static collection, meaning any subsequent change in DOM does not affect the content of the collection
+    - *document.querySelectorAll()* returns a static NodeList
+
+*** querySelector
+- If no matching node found, null is returned
+  - Returns first matching Element node within the node's subtree
+
+- Syntax
+
+  #+BEGIN_SRC js
+    element = document.querySelector(selectors);
+  #+END_SRC
+
+  - Selectors is a string containing one or more CSS selectors separated by commas
+
+
+*** querySelectorAll
+- Returns a NodeList containing all matching Element nodes within the node's subtree, or an empty NodeList if no matches are found (non-live NodeList)
+
+- Syntax
+
+  #+BEGIN_SRC js
+    elementList = document.querySelectorAll(selectors);
+  #+END_SRC
+
+** Array Operations
+*** forEach
+- Exceutes the provided callback once for each element present in array in ascending order
+- Not invoking for index properties that have been deleted or are uninitialized
+
+- Executes a provided function once for each array element
+
+  e.g
+  #+BEGIN_SRC js
+    var a = ['a', 'b', 'c'];
+
+    a.forEach(function (element) {
+        console.log(element);
+    });
+
+    // a
+    // b
+    // c
+  #+END_SRC
+
+*** map
+- Map calls a provided callback function once for each element in an array, in order, and constructs a new array from the result
+- Creates new array with results of calling a provided function on every element in array
+
+  e.g
+  #+BEGIN_SRC js
+    var numbers = [1, 5, 10, 15];
+    var roots = numbers.map(function (x) {
+        return x * 2;
+    });
+
+    roots // [2, 10, 20, 30]
+    numbers // [1, 5, 10, 15]
+
+
+    var numbers = [1, 4, 9];
+    var roots = number.map(Math.sqrt);
+
+    roots // [1, 2, 3]
+    numbers // [1, 4, 9]
+  #+END_SRC
+
+*** filter
+- Calls a provided callback function once for each element in an array and constructs a new array of all the values for which returns a value that coerces to true
+- Creates new array with all elements that pass the test implemented by provided function
+
+  e.g
+  #+BEGIN_SRC js
+    var a = [12, 5, 8, 130, 44]
+
+    var filtered = a.filter((value) => value >= 10);
+
+    filtered // [12, 130, 44]
+  #+END_SRC
+
+- *callback*: function is a predicate, to test each element of array
+  - return true to keep the element, false otherwise
+
+*** reduce
+-
+
+** Event
+- EventTarget is an interface implemented by an objects that can receive events and have listeners for them
+  - It can be an Element in a Document, or any other object that supports events
+
+*** Methods
+- *EventTarget.addEventListener()*: method registers the specified listener on /EventTarget/
+  - Syntax
+
+    #+BEGIN_SRC js
+      target.addEventListener(type, listener[, options]);
+      target.addEventListener(type, listener[, useCapture]);
+    #+END_SRC
+
+    - *Parameters*:
+      - type: A *string* representing the event type to listen for
+
+      - listener: Object that receives a notification (that implements the Event interface) when an event of the specified type occurs
+        - Or simply a JavaScript *function*
+
+      - options (Optional): Object that specifies characteristic about the event listener
+        - Options are:
+          - capture: *Boolean*
+          - once: *Boolean*
+            - If it is true, listener would be removed automatically when it is invoked
+          - passive: *Boolean*
+
+      - useCapture (Optional): Events that are bubbling upward through the tree will not trigger a listener designated to use capture
+        - If not specified, useCapture defaults to false
+
+- *EventTarget.removeEventListener()*: method removes event listener previously registered with EventTarget.addEventListener()
+  - Syntax
+
+    #+BEGIN_SRC js
+      target.removeEventListener(type, listener[, options]);
+      target.removeEventListener(type, listener[, options]);
+    #+END_SRC
+
+    - Parameters
+      - type: A *string* representing the event type to remove
+      - listener: EventListener *function* to remove from the event target
+      - options (Optional): Object that specifies characteristic about event listener
+      - useCapture (Optional): Specifies whether EventListener to be removed is registered as capturing listener or not
+        - If listener is registered twice, one with capture and one without, remove each one separately
+        - Removal of a capturing listener does not affect a non-capturing version of the same listener
+*** Events
+**** click
+- Click event is fired when mouse button is pressed and released on single element
+
+  e.g
+  #+BEGIN_SRC js
+  document.getElementById("test").addEventListener("click", function(event) {
+      // display the current click count inside the clicked div
+      event.target.innerHTML = "click count: " + event.detail;
+  }, false);
+  #+END_SRC
+
+**** mouseenter
+- Mouseenter event is fired when a pointing device (usually a mouse) is moved over the element that has the listener attached
+- With deep hierarchies, events sent can be quite huge and cause performance problems
+- Mouseenterm and mouseleave is very similar way to the CSS:hover pseudo-class
+
+e.g
+#+BEGIN_SRC js
+  para = document.querySelector("p");
+
+  para.addEventListener('mouseenter', function(){
+      // set tag p color when mouse enter
+      para.style.color = "orange";
+  });
+#+END_SRC
+
+**** mouseleave
+- Event fired when mouse is moved off the element that has the listener attached
+
+e.g
+#+BEGIN_SRC js
+  para = document.querySelector('p');
+
+  para.addEventListener('mouseleave', function(){
+      // when mouse leave set tag p style color
+      para.style.color = "black";
+  });
+#+END_SRC

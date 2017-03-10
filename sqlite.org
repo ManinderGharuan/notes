@@ -1,0 +1,336 @@
+* Sqlite3
+- *SQLite*: is a C library that provides a lightweight disk-based database that doesn't require a separate server process
+  - Allows accessing the database using a nonstandard variant of SQL query language
+  - Some application can use SQLite for internal data storage
+
+** How to create sqlite3 db
+- Create a *Connection* object that represents the database using *connect()* function of sqlite3 module
+- When try to connect SQLite database file that does not exist, it creates a new database
+
+e.g
+#+BEGIN_SRC python
+  import sqlite3
+
+  conn = sqlite3.connect('example.db')
+
+  conn.close() # Always close database connection when complete with it
+#+END_SRC
+
+- Database operations can perform by using *Connection* object
+- There is special name *:memory:* to create a database in RAM
+
+  e.g
+  #+BEGIN_SRC python
+    import sqlite3
+
+    conn = sqlite3.connect(':memory:')
+
+    conn.close()
+  #+END_SRC
+
+** How to create sqlite3 table
+- Three steps to create a SQLite database table
+  - Create Connection object using connect()
+  - Create a cursor object by calling cursor() method of Connection object
+  - Pass CREATE TABLE statement to the execute() method of cursor object and execute method
+
+  e.g
+  #+BEGIN_SRC python
+    import sqlite3
+
+    conn = sqlite3.connect('example.db')
+    c = conn.cursor()
+
+    # Create table
+    c.execute("""CREATE TABLE IF NOT EXISTS projects (
+                                                      id integer PRIMARY KEY autoincrement,
+                                                      name text NOT NULL,
+                                                      begin_date text,
+                                                      end_date text
+                                                     );
+              """)
+
+
+    conn.close()
+  #+END_SRC
+
+** jField data types in sqlite3
+- *Data Type*: is an attribute that specifies type of any object
+  - Each column, variable and expression has related data type in SQLite
+
+  - *Storage Classes*
+    - *NULL*: value is a NULL value
+    - *INTEGER*: value is signed integer, stored in 1, 2, 3, 4, 6, 8 bytes depending on magnitude of value
+    - *REAL*: Value is floating point, stored as 8-byte IEEE floating point number
+    - *TEXT*: value is a text string, stored using database encoding (UTF-8, UTF-16BE or UTF-16LE)
+    - *BLOB*: value is a blob of data, stored exactly as it was input
+
+  - *Affinity Type*: SQLite supports concept of type affinity on columns
+    - Column can still store any type of data but preferred storage class for a column is called *affinity*
+
+    - *TEXT*: Column stores all data using storage classes NULL, TEXT or BLOB
+    - *NUMERIC*: Column may contain values using all five storage classes
+    - *INTEGER*: Behaves same as column with NUMERIC affinity with an exception in a CAST expression
+    - *REAL*: Behaves like a column with NUMERIC affinity except that it force integer values into floating point representation
+    - *NONE*: Column does not prefer one storage class over another and no attempt is made to coerce data from one storage class into another
+
+  - *Affinity and Data Type Names*
+    - *INTEGER*
+      - *INT*
+      - *INTEGER*
+      - *TINYINT*
+      - *SMALLINT*
+      - *MEDIUMINT*
+      - *BIGINT*
+      - *UNSIGNED BIG INT*
+      - *INT2*
+      - *INT8*
+
+    - *TEXT*
+      - *CHARACTER(20)*
+      - *VARCHAR(255)*
+      - *VARYING CHARACTER(255)*
+      - *NCHAR(55)*
+      - *NATIVE CHARACTER(70)*
+      - *NVARCHAR(100)*
+      - TEXT
+      - CLOB
+
+    - *NONE*
+      - *BLOB*
+      - no datatype specified
+
+    - *REAL*
+      - *REAL*
+      - *DOUBLE*
+      - *DOUBLE PRECISION*
+      - *FLOAT*
+
+    - *NUMERIC*
+      - *NUMERIC*
+      - *DECIMAL(10,5)*
+      - *BOOLEAN*
+      - *DATE*
+      - *DATETIME*
+
+  - *Boolean Datatype*: does not have a separate Boolean storage class
+    - Boolean values are stored as integers 0 (false) and 1 (true)
+
+** Queries
+- *Select*: statement used to fetch data from SQLite database table which returns data in the form of result table
+  - result tables also called result-sets
+  - Syntax:
+
+    #+BEGIN_SRC sql
+      SELECT * FROM tablename;
+
+      SELECT column1, column2, columnN FROM tablename;
+    #+END_SRC
+
+- *Where*: clause is used to specify a condition while fetching the data from one table or multiple tables
+  - If condition true, then it returns specific value from the table
+  - Use WHERE clause to filter records and fetching only necessary records
+  - Syntax
+
+    #+BEGIN_SRC sql
+      SELECT column1, columnN
+      FROM tablename
+      WHERE [condition];
+
+      SELECT *
+      FROM tablename
+      WHERE [condition];
+    #+END_SRC
+
+  - E.g
+    #+BEGIN_SRC sql
+      SELECT * FROM student WHERE age >= 18;
+    #+END_SRC
+
+- *Order by*: clause is used to sort the data in ascending or descending order, based on one or more columns
+  - Syntax
+
+    #+BEGIN_SRC sql
+      SELECT *
+      FROM tablename
+      [WHERE consition]
+      [ORDER BY column1, column2, ... columnN] [ASC | DESC];
+    #+END_SRC
+
+  - E.g
+
+    #+BEGIN_SRC sql
+      SELECT * FROM company ORDER BY roll_no DESC;
+    #+END_SRC
+
+- *Group by*: clause is used in collaboration with SELECT statement to arrange identical data into groups
+  - This clause follows WHERE clause in SELECT statement and precedes the ORDER BY clause
+  - Syntax
+
+    #+BEGIN_SRC sql
+      SELECT columns-list
+      FROM tablename
+      WHERE [ conditions ]
+      GROUP BY column1, column2 .... columnN
+      ORDER BY column1, column2 .... columnN;
+    #+END_SRC
+
+- *Insert*: into statement is used to add rows of data into a table in database
+  - Syntax
+
+    #+BEGIN_SRC sql
+      INSERT INTO tablename [(column1, column2,... columnN)]
+      VALUES (value1, value2,... valueN);
+
+      INSERT INTO tablename VALUES (value1, value2,... valueN);
+    #+END_SRC
+
+  - E.g
+
+    #+BEGIN_SRC sql
+      INSERT INTO company (id, name, age, address, salary)
+      VALUES (1, 'Paul', 32, 'California', 20000.00);
+
+      INSERT INTO company (id, name, age, address, salary)
+      VALUES (2, 'Allen', 25, 'Texas', 25000.00);
+
+      INSERT INTO company (id, name, age, address, salary)
+      VALUES (3, 'Teddy', 23, 'Norway', 65000.00);
+    #+END_SRC
+
+- *Delete*: query is used to delete existing records from a table
+  - Use WHERE clause with DELETE query to delete selected rows, otherwise all records would be deleted
+  - Syntax
+
+    #+BEGIN_SRC sql
+      DELETE FROM tablename
+      WHERE [condition];
+    #+END_SRC
+
+- *Like*: operator is used to match text values against a pattern using wildcards
+  - If the search expression can be matched to pattern expression, LIKE operator will return true (1)
+  - Two wildcards used in conjunction with LIKE operator:
+    - Percent sign (%): represents zero, one or multiple numbers or characters
+    - Underscore (_): represents a single number or character
+    - These symbols can be used in combinations
+  - Syntax
+
+    #+BEGIN_SRC sql
+      SELECT FROM tablename
+      WHERE column1 LIKE 'XXXX%' /* Finds any values that starts with XXXX */
+
+      SELECT FROM tablename
+      WHERE column1 LIKE '%XXXX%' /* Finds any values that have XXXX in any position */
+
+      SELECT FROM tablename
+      WHERE column1 LIKE 'XXXX_' /* Finds any values in five-lines text that start with XXXX */
+
+      SELECT FROM tablename
+      WHERE column1 LIKE 'X_X' /* Finds any values in three-lines text that start with X and end with X */
+    #+END_SRC
+
+- *Having*: clause enables to specify conditions that filter which groups results appear in the final results
+  - It places conditions on the selected columns, whereas the HAVING clause places conditions on groups created by GROUP BY clause
+  - Syntax
+
+    #+BEGIN_SRC sql
+      SELECT * FROM tablename
+      WHERE [ conditions ]
+      GROUP BY column1, ... columnN
+      HAVING [ conditions ];
+    #+END_SRC
+
+- *In*: condition is used to help reduce the need to use multiple OR conditions in a SELECT, INSERT, UPDATE, or DELETE statement
+  - Syntax
+
+    #+BEGIN_SRC sql
+      expression IN (value1, value2, ... ValueN);
+    #+END_SRC
+
+  - E.g
+
+    #+BEGIN_SRC sql
+      SELECT * FROM student
+      WHERE first_name IN ('Sarah', 'Jane', 'Heather');
+    #+END_SRC
+
+- *Not/And/Or*
+  - *NOT*: condition (also called NOT operator) used to negate a condition in SELECT, INSERT, UPDATE or DELETE statement
+    - E.g
+
+      #+BEGIN_SRC sql
+        SELECT * FROM student
+        WHERE branch NOT IN ('BCA', 'BSC');
+
+        SELECT * FROM student
+        WHERE branch IS NOT NULL;
+
+        SELECT * FROM student
+        WHERE name NOT LIKE 'a%';
+      #+END_SRC
+
+  - *AND*/ *OR*: operators are used to compile multiple conditions to narrow down selected data in a SQLite statement
+    - These operators are called conjunction operators
+    - Syntax
+
+      #+BEGIN_SRC sql
+        SELECT * FROM tablename
+        WHERE [ condition1 ] AND [ condition2] ... AND [ conditionN ];
+
+
+        SELECT * FROM tablename
+        WHERE [ condition1 ] OR [ condition2].... OR [ conditionN ];
+      #+END_SRC
+
+- *Update*: query used to modify existing records in a table
+  - Use WHERE clause to update selected rows, otherwise all rows would be update
+  - Syntax
+
+    #+BEGIN_SRC sql
+      UPDATE tablename
+      SET column1 = value1, column2 = value2 ..., columnN = volueN
+      WHERE [ condition ];
+    #+END_SRC
+
+- *Alter*: table command modifies an existing table without performing a full dump and reload of data
+  - Can rename a table name
+  - Additional columns can be added in an existing table
+  - Syntax
+
+    #+BEGIN_SRC sql
+      ALTER TABLE database_name.tablename RENAME TO new_tablename;
+
+      ALTER TABLE database_name.tablename ADD COLUMN column_def...;
+    #+END_SRC
+
+- *Explain*: used for describing details of
+  - Syntax
+
+    #+BEGIN_SRC sql
+      EXPLAIN [SQLite Query]
+    #+END_SRC
+
+** Field Constraints
+- Constraints are rules enforced on data columns on table
+- Used to limit type of data that can go into table
+- It could be column level or table level
+  - Column level constraints are applied only to one column where as table level constraints are applied to the whole table
+
+- Commonly used constraints are
+  - *NOT NULL* Constraint: Ensures that a column cannot have NULL value
+  - *DEFAULT* Constraint: provides a default value for a column when none is specified
+  - *UNIQUE* Constraint: Ensures that all values in column are different
+  - *PRIMARY KEY* Uniquely identified each rows/records in database table
+  - *CHECK* Constraint: Ensures that all values in column satisfy certain conditions
+
+  - E.g
+
+    #+BEGIN_SRC sql
+      CREATE TABLE company (
+             Id  INT PRIMARY KEY NOT NULL,
+             Name Text NOT NULL UNIQUE,
+             Age INT NOT NULL CHECK(Age > 18),
+             ADDRESS CHAR(50),
+             SALARY REAL DEFAULT 40000.00
+             );
+    #+END_SRC
