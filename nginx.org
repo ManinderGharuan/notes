@@ -1,0 +1,124 @@
+* Nginx
+- It is lightweight, high performance web server designed to deliver large amounts of static content with use of system resources
+
+** Preserve a working configuration
+- Make a copy of the server configuration file before making changes to it
+#+BEGIN_SRC bash
+  cp /etc/nginx/nginx.config /etc/nginx/nginx.conf.backup
+#+END_SRC
+
+** Start, Stop, Reload
+- After changing nginx.conf file, need to reload configuration before the change will take effect
+#+BEGIN_SRC bash
+  service nginx reload
+#+END_SRC
+
+** Syntax
+- *hash* # is using for comments
+- Settings begin with the variable name and then state an argument/arguments separated by spaces
+- All statements end with a semi-colon (;)
+- Some settings have arguments that are themselves settings with arguments
+  - All sub-directives are enclosed in one set of curly brackets (*{ }*)
+
+** Defining directives
+*** User
+- Defines which Linux system user will own and run nginx server
+*** worker_process
+- Defines how many threads, or simultaneous instances, of nginx to run
+*** pid
+- Defines where nginx will write its master process ID
+- Used by OS to keep track of and send signals to the nginx process
+
+** HTTP (Universal Configuration)
+#+BEGIN_SRC conf
+  http {
+
+      ##
+      # Basic Settings
+      ##
+
+      sendfile on;
+      tcp_nopush on;
+      tcp_nodelay on;
+      keepalive_timeout 65;
+      types_hash_max_size 2048;
+      # server_tokens off;
+
+      # server_names_hash_bucket_size 64;
+      # server_name_in_redirect off;
+
+      include /etc/nginx/mime.types;
+      default_type application/octet-stream;
+
+      ##
+      # Logging Settings
+      ##
+
+      access_log /var/log/nginx/access.log;
+      error_log /var/log/nginx/error.log;
+
+      ##
+      # Gzip Settings
+      ##
+
+      gzip on;
+      gzip_disable "msie6";
+#+END_SRC
+
+*** include
+- It includes the file mine.types
+  - Anything written in the file mine.types is interpreted as if it was written inside the http { } block
+
+*** gzip
+- It tells the server to use on-the-fly gzip compression to limit the amount of bandwidth used and speed up some transfers
+
+** Server (Virtual Domains Configuration)
+- HTTP block contains the statement `include /etc/nginx/sites-enabled/*;`
+- It allows for server block configurations to be loaded from files found in `site-enable` sub-directory
+- Directives and settings that make up the server block/
+  - File: /etc/nginx/sites-available/default
+   #+BEGIN_SRC conf
+     server {
+             listen 80 default_server;
+             listen [::]:80 default_server ipv6only=on;
+
+             root /usr/share/nginx/html;
+             index index.html index.htm;
+
+             # Make site accessible from http://localhost/
+             server_name localhost;
+
+             location / {
+                     # First attempt to serve request as file, then
+                     # as directory, then fall back to displaying a 404.
+                     try_files $uri $uri/ /index.html;
+                     # Uncomment to enable naxsi on this location
+                     # include /etc/nginx/naxsi.rules
+             }
+     }
+   #+END_SRC
+- Server block is where typical nginx user will make most of changes to default configuration
+- Make separate file with its own server block for each virtual domain on your server
+
+*** Listening Posts
+- The listen directive, tells nginx the hostname/IP and TCP port where it should listen for HTTP connections
+
+*** Name-Based Virtual Hosting
+- server_name directive provide administrator name-based virtual hosting
+- This allows multiple domains to be served from a single IP address
+- Server decides which domain to serve based on the request header it receives
+- Create one file per domain which want to host on server
+
+** Access Logs
+- It can be set in http block or in server block for specific virtual domain
+
+** Location (File and Folder Configuration)
+- The location setting lets you configure how nginx will respond to requests for resources within the server
+- Example File: /etc/nginx/sites-available/example.com
+  #+BEGIN_SRC conf
+    location / { }
+    location /images/ { }
+    location /blog/ { }
+    location /planet/ { }
+    location /planet/blog/ { }
+  #+END_SRC

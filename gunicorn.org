@@ -1,0 +1,322 @@
+* About Gunicorn and Nginx
+** Gunicorn
+- Runs any WSGI Python web application (and framework)
+- Can be used as a drop-in replacement for Paster (Pyramid), Django's Development Server, web2py etc
+- Comes with various worker types and configurations
+- Manages worker processes automatically
+
+** Web Application Deployment Using Nginx
+- It is very high performing web server / reverse-proxy
+- Capable of handling lot of requests (virtually unlimited) which depending on application or website load
+
+*** Why use Nginx as a reverse-proxy in front of an application server?
+- Many frameworks and application servers (including Gunicorn) can serve static files together with responses
+- Reverse-proxy server such as Nginx handle the task of serving these files and managing connections (requests)
+
+* Preparing Droplet for Production
+** Setting up Python, pip and virtualenv
+*** python-dev
+- It is an operating-system level package which contains extended development tools for building Python modules
+- Command to install python-dev using aptitude
+  #+BEGIN_SRC bash
+    aptitude install python-dev
+  #+END_SRC
+
+*** pip
+- pip is a package manager which will help to install application packages that needed
+- Command to install pip
+  #+BEGIN_SRC bash
+    curl https://bitbucket.org/pypa/setuptools/raw/bootstrap/ez_setup.py | python -
+    curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python -
+    export PATH="/usr/local/bin:$PATH"
+  #+END_SRC
+
+*** virtualenv
+- Used to contain a Python application within its own environment together with all of its dependencies
+- Command to install virtualenv
+  #+BEGIN_SRC bash
+    sudo pip install virtualenv
+  #+END_SRC
+
+** Creating a self-contained Virtual (Python) Environment
+- Create a directory which contains virtual environment and application module
+  #+BEGIN_SRC bash
+    mkdir app
+  #+END_SRC
+- Create new virtual environment inside
+  #+BEGIN_SRC bash
+    cd app
+    virtualenv app_venv
+  #+END_SRC
+- Create new directory to contain Python application module as well
+- Activate the interpreter inside the virtual environment to use it
+  #+BEGIN_SRC bash
+    source app_venv/bin/activate
+  #+END_SRC
+
+** Installing Gunicorn
+- Download and install Gunicorn inside virtual environment
+- If not working inside an environment, Gunicorn will be installed globally
+#+BEGIN_SRC bash
+  pip install gunicorn
+#+END_SRC
+
+** Installing Nginx
+- Command to use default system package manager
+  #+BEGIN_SRC bash
+    sudo aptitude install nginx
+  #+END_SRC
+- Command to start Nginx
+  #+BEGIN_SRC bash
+    sudo service nginx start
+  #+END_SRC
+- Command to stop Nginx
+  #+BEGIN_SRC bash
+    sudo service nginx stop
+  #+END_SRC
+- Command to restart Nginx
+  #+BEGIN_SRC bash
+    sudo service nginx restart
+  #+END_SRC
+
+* Serving Python Web Applications with Gunicorn
+** WSGI
+- WSGI in a nutshell is an interface between a web server and the application itself
+- It exists to ensure a standardized way between various servers and applications (frameworks) to work with each other
+
+** WSGI Application Object (Callable): wsgi.py
+- A wsgi.py contain and provide an application object (or callable) to be used by server
+
+** Running server
+- To start serving application
+  #+BEGIN_SRC bash
+    gunicorn [option] [option] .. [wsgi file]
+
+    gunicorn -b 0.0.0.0:8080 wsgi
+
+    gunicorn --bind localhost:5000 wsgik
+
+    # run server in background
+    gunicorn -b 0.0.0.0:8080 wsgi &
+  #+END_SRC
+
+** Configuring and Optimising Gunicorn
+*** Worker Count
+- It is considered (and accepted) that applications are rather I/O bound than CPU bound
+  #+BEGIN_SRC bash
+    gunicorn --workers=[number of workers]
+
+    gunicorn --workers=5xb
+  #+END_SRC
+* Create a systemd Unit File
+- Creating a systemd unit file will allow init system to automatically start Gunicorn and serve Flask application whenever the server boots
+  #+BEGIN_SRC bash
+    sudo nano /etc/systemd/system/project.service
+  #+END_SRC
+- Inside, start with the ~[UNIT]~ section, which is used to specify and dependencies
+  - Put a description of service and tell the init system to only start this after the networking target has been reached
+  #+BEGIN_SRC org
+    [Unit]
+    Description=Gunicorn instance to serve project
+    After=network.target
+  #+END_SRC
+- Next, open up the [Service] section
+  - Specify the user and group which want to process to run under
+  - Give regular user account ownership of the process since it owns all of the relevant files
+  - Give group ownership to ~www-data~ group so that Nginx can communicate easily with Gunicorn processes
+  - Map out working directory and set ~PATH~ environment variable so that the init system knows where executable for the process are located (within virtual environment)
+  - Specify the commanded to start the service
+  - Systemd requires that give full path to the Gunicorn executable, Which is installed within virtual environment
+  - Create and bind to a Unix socket file within project directory called ~project.sock~
+  - Pass WSGI entry point file name and the Python callable within
+  #+BEGIN_SRC org
+    [Service]
+    User=maninder
+    Group=www-data
+    WorkingDirectory=~/Documents/project
+    Environment="PATH=/home/maninder/.virtualenvs/project/bin"
+    ExecStart=/home/manidner/.virtualenve/project/bin/gunicorn --workers 3 --bind unix:project.sock
+  #+END_SRC
+- Add an ~[Install]~ section
+  - This will tell systemd what to link this service to if enable it to start at boot
+  - In this example service start when the regular multi-user system is up and running
+#+BEGIN_SRC org
+  [Install]
+  WantedBy=multi-user.target
+#+END_SRC
+
+- Now start Gunicorn service which created and enable it so that it starts at boot
+  #+BEGIN_SRC bash
+    sudo systemctl start project
+    sudo systemctl enable project
+  #+END_SRC
+* Configuring Nginx to Proxy Requests
+- Need to configure Nginx to pass web requests to that socket by making some small additions to its configuration file
+
+- Create a new server block configuration file in Nginx's sites-available directory
+#+BEGIN_SRC bash
+  sudo nano /etc/nginx/sites-available/project
+#+END_SRC
+- Open a server block and tell Nginx to listen on the default port 80
+- Also need to tell it to use this block for requests for server's domain name or IP address
+#+BEGIN_SRC org
+  server {
+      listen 80;
+      server_name server_domain_or_IP;
+  }
+#+END_SRC
+- Add location block that matches every request
+- In this block, include ~proxy_params~ file that specifies some general proxying parameters that need to be set
+- Then pass request to the socket which defined using ~proxy_pass~ directive
+#+BEGIN_SRC org
+  server {
+      listen 80;
+      server_name server_domain_or_IP;
+
+      location / {
+          include proxy_params;
+          proxy_pass http://unix:/home/maninder/project/project.sock;
+      }
+  }
+#+END_SRC
+
+- To enable Nginx server block configuration just create link the file to the sites-enabled directory
+#+BEGIN_SRC bash
+  sudo ln -s /etc/nginx/sites-availabel/project /etc/naginx/sites-enabled
+#+END_SRC
+- Check syntax errors
+#+BEGIN_SRC bash
+  sudo nginx -t
+#+END_SRC
+* Supervisor
+- Supervisor is a client/server system that allows its users to monitor and control a number of processes on UNIX-like operating systems
+- It is a process manager which makes managing a number of long-running programs a trivial task by providing a consistent interface through which they can be monitored and controlled
+
+** Installation
+#+BEGIN_SRC bash
+  sudo dnf install supervisor
+#+END_SRC
+- Once completed, the supervisor daemon should already be started, as prebuilt packages come with an init script that will also ensure the Supervisor is restarted after a system reboot
+  #+BEGIN_SRC bash
+    service supervisor restart
+  #+END_SRC
+
+*** Creating a Configuration File
+- Once Supervisor installation has completed run ~echo_supervisor_conf~
+- This will print a "sample" Supervisor configuration file to terminal's stdout
+- Once see the file echoed to terminal, reinvoke the command as ~echo_supervisor_conf > /etc/supervisord.conf~
+  #+BEGIN_SRC bash
+    echo_supervirsor_conf > /etc/supervisord.conf
+  #+END_SRC
+- Needs root access to do this
+
+** Adding a Program
+- New programs are given to supervisor through configuration files, which inform it of the executable to run, any environmental variables, and how output should be handled
+- All programs run under Supervisor must be run in a non-daemonising mode (sometimes also called 'foreground mode')
+- If by default the program forks and returns on startup, then need to consult the program's manual to find the options to enable this mode, otherwise Supervisor will not be able to properly determine the status of the program
+- Make a shell script to keep persistently running and save in ~/usr/local/bin/long.sh~
+  #+BEGIN_SRC sh
+    #!/bin/bash
+    while true
+    do
+  	    # Echo current date to stdout
+  	    echo `date`
+  	    # Echo 'error!' to stderr
+  	    echo 'error!' >&2
+  	    sleep 1
+    done
+  #+END_SRC
+
+  #+BEGIN_SRC bash
+    chmod +x /usr/local/bin/long.sh
+  #+END_SRC
+
+- This script is clearly rather pointless, but it will allow ti cover the fundamentals of Supervisor configuration
+
+- The program configuration files for Supervisor programs are found in the /etc/supervisor/conf.d directory
+- Normally with one program per file and a .conf extension
+- A simple configuration for scipt, saved at /etc/supervisor/conf.d/long_script.conf
+  #+BEGIN_SRC conf
+    [program:long_script]
+    command=/usr/local/bin/long.sh
+    autostart=true
+    autorestart=true
+    stderr_logfile=/var/log/long.err.log
+    stdout_logfile=/var/log/long.out.log
+  #+END_SRC
+
+- Configuration begins by defining a program with the name ~long_script~ and the full path to the program
+  #+BEGIN_SRC conf
+    [program:long_script]
+    command=/usr/local/bin/long.sh
+  #+END_SRC
+
+- Next two lines define the basic automatic behavior of the script under certain conditions
+  - The ~autostart~ option tells Supervisor that this program should be started when system boots
+  - Setting this to false will require a manual start command following any system shutdown
+- ~autorestart~ defines how Supervisor should manage the program in the event it exits and has three options
+  - false tells Supervisor not to ever restart the program after it exits
+  - true tells Supervisor to always restart program after it exits
+  - unexpected tells Supervisor to only restart the program of it exits with an unexpected error code
+
+- Once configuration file is created and saved
+- inform Supervisor of our new program through the ~supervisorctl~ command
+- First tell Supervisor to look for any new or changed program configurations in the /etc/supervisor/conf.d directory with
+  #+BEGIN_SRC bash
+    supervisorctl reread
+  #+END_SRC
+- Followed by telling it to enact any changes with
+  #+BEGIN_SRC bash
+    supervisorctl update
+  #+END_SRC
+
+** Managing Programs
+- Once programs are running, there will undoubtedly be a time when we want to stop, restart, or see their status
+- To enter the interactive mode, start supervisorctl with no arguments
+  #+BEGIN_SRC bash
+    supervirsorctl
+  #+END_SRC
+- When started, supervirsorctl will initially print status and uptime of all programs
+- Entering help will reveal all the available commands
+* Deployment
+** Configure Git
+- Set up a bare Git repo that can puch to
+  #+BEGIN_SRC bash
+    sudo mkdir /home/git && cd /home/git
+    sudo mkdir flask_project.git && cd flask_project.git
+    sudo git init --bare
+  #+END_SRC
+
+** Configure the Post-Receive Hook
+#+BEGIN_SRC bash
+  sudo vim hooks/post-receive
+#+END_SRC
+
+#+BEGIN_SRC sh
+  #!/bin/sh
+  GIT_WORK_TREE=/home/www/flask_project git checkout -f
+#+END_SRC
+
+- Every push, the new files will copy over to the app directory ~/home/www/flask_project~
+- Make file executable
+  #+BEGIN_SRC bash
+    sudo chmod +x hooks/post-receive
+  #+END_SRC
+
+** Profit!
+- Back in local Flask directory (~flask_project~) add new Git repo
+  #+BEGIN_SRC bash
+    git init
+    git remote add production root@192.168.1.7:/home/git/flask_project.git
+  #+END_SRC
+- Make some changes to code in app.py file
+- Commit local changes, then push
+  #+BEGIN_SRC bash
+    git add -A
+    git commit -am "initial"
+    git push production masterc
+  #+END_SRC
+- SSH into server and restart gunicorn via Supervisor
+  #+BEGIN_SRC bash
+    sudo supervisorctl restart flask_project
+  #+END_SRC
