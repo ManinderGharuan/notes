@@ -1,0 +1,1934 @@
+* CSS Grid Layout
+- It a new layout model optimized for two-dimensional layouts
+- It's ideal for website layouts, forms, image galleries, and anything that requires precise and responsive positioning
+- HTML tables were often used for multi-column layouts, forms, etc
+- The presentation had to be done at the markup level, so there was no separation between presentation and content
+- Tables were designed to hold tabular data, not for doing layouts
+- Table layouts are not suited to responsive design
+- Floated elements replaced table layouts and it allow to position elements independently of the markup
+- Floats were mainly designed for document layout, and they weren't necessarily ideal for the more complex, application layout that is so prevalent on web today
+- Floated elements can be difficult to control, when viewed on different sized devices and view ports
+- CSS grid layout model allows to create advanced layouts in a fraction of the time it would take to do it with floated elements and with less code
+
+** How Grid Works
+- Grid layout works on a grid system
+- Grid is an intersecting set of horizontal and vertical lines
+  - which create a sizing and positioning coordinate system for the grid container's contents
+- Simply set an element to ~display: grid~ to create a grid
+  - It automatically makes all of that element's direct descendents grid items
+- Now use various grid properties to adjust their size and positioning as required
+- The first step is to define how many rows and columns the grid has (optional)
+
+** Create a Grid
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    # grid {
+       display: grid;
+       grid-template-rows: 1fr 1fr 1fr;
+       grid-template-columns: 1fr 1fr 1fr;
+       grid-gap: 2vw;
+    }
+
+    #grid > div {
+       font-size: 5vw;
+       padding: .5em;
+       background: gold;
+       text-align: center;
+    }
+  </style>
+  <div id="grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+  </div>
+#+END_SRC
+
+*** display: grid
+  - Turns the element into a grid container
+  - The ~grid~ value generates a block-level grid container box
+  - Use ~display: inline-grid~ to create an inline-level grid container box
+  - ~display: subgrid~ to create a subgrid (this value is designed to be used on grid items themselves)
+
+*** grid-template-rows: 1fr 1fr 1fr~ / ~grid-template-columns: 1fr 1fr 1fr
+  - Sets the rows/columns of the grid
+  - Each value represents size of the row/column
+  - Can also use different unit values as 100px, 7em, 30%, etc
+  - Can also provide line names along with track sizes
+
+  - Example
+    #+BEGIN_SRC css
+      grid-template-rows: 20vh 1fr 20vh;
+      grid-template-columns: 50vh 1fr 10vh;
+    #+END_SRC
+
+    - Three values specify the track sizing function to be used for each of the three rows/columns
+    - In this sizes using two different units
+    - ~20vh~ value is a type of ~<length>~ (each ~vh~ is relative to 1% of the view port's height)
+    - ~fr~ unit represents a flexible length (also known as ~<flex>~ value)
+    - This unit represents a fraction of the free space in the grid container
+
+**** Named Lines
+#+BEGIN_SRC css
+  grid-template-rows: [row1-start] 20vw [row2-start] 1fr [row3-start] 20vw;
+  grid-template-columns: [col1-start] 50vw [col2-start] 1fr [col3-start] 10vw;
+#+END_SRC
+- Named lines can make the grid easier to understand
+- Provide with any meaningful names to all of the lines in the grid
+
+*** grid-gap: 2vw
+- Sets gutter
+- The gutter is the gap in between grid items
+- Example
+  #+BEGIN_SRC css
+    grid-gap: 10px;
+
+    /* The above code is equivalent to this */
+    grid-gap-rows: 10px;
+    grid-gap-columns: 10px;
+
+    /* or */
+    grid-gap: 10px 20px;
+
+    /* The above code is equivalent to this */
+    grid-gap-rows: 10px;
+    grid-gap-columns: 20px;
+  #+END_SRC
+
+*** The repeat() Function
+- Use ~repeat()~ function to repeat a track definition for a specified number of times
+  #+BEGIN_SRC css
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+
+    grid-template-rows: repeat(5, 1fr);
+  #+END_SRC
+
+** Creating a Website Layout with CSS Grid
+- Grid includes an intuitive "ASCII art" syntax where you can virtually "see" the layout within code
+  - So this makes it extremely easy to create and modify layout
+- Major changes can also done within a few seconds
+- This intuitive syntax also helps with responsive web design
+- Creating different layouts for different devices becomes quit trivial (little values) when using grid
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    body {
+      display: grid;
+      grid-template-areas:
+        "header header header"
+        "nav article ads"
+        "footer footer footer";
+      grid-template-rows: 60px 1fr 60px;
+      grid-template-columns: 20% 1fr 15%;
+      grid-gap: 10px;
+      height: 100vh;
+      margin: 0;
+    }
+
+    header, footer, article, nav, div {
+      padding: 20px;
+      background: gold;
+    }
+
+    #pageHeader {
+      grid-area: header;
+    }
+
+    #pageFooter {
+      grid-area: footer;
+    }
+
+    #mainArticle {
+      grid-area: article;
+    }
+
+    #mainNav {
+      grid-area: nav;
+    }
+
+    #siteAds {
+      grid-area: ads;
+    }
+  </style>
+  <body>
+    <header id="pageHeader">Header</header>
+    <article id="mainArticle">Article</article>
+    <nav id="mainNav">Nav</nav>
+    <div id="siteAds">Ads</div>
+    <footer id="pageFooter">Footer</footer>
+  </body>
+#+END_SRC
+
+*** ASCII Art
+  #+BEGIN_SRC css
+    grid-template-areas:
+      "header header header"
+      "nav article ads"
+      "footer footer footer";
+  #+END_SRC
+
+  - This is the bit that defines actual layout
+  - There are 3x3 grid (three rows and three columns)
+  - So there is five grid area across nine grid cells
+
+*** Assign Grid Areas to an Element
+#+BEGIN_SRC css
+  #pageHeader {
+    grid-area: header;
+  }
+
+  #pageFooter {
+    grid-area: footer;
+  }
+
+  #mainArtice {
+    grid-area: article;
+  }
+
+  #mainNav {
+    grid-area: nav;
+  }
+
+  #siteAds {
+    grid-area: ads;
+  }
+#+END_SRC
+
+- The ~grid-area~ property is shorthand property allows to place grid items within a grid
+- In this case, simply refer to the names that provided to the ~grid-template-areas~ property
+
+*** Modifying the Layout
+- Change layout by simply rearranging the grid areas provided to the ~grid-template-area~ property
+- To adjust the track sizing if move a smaller grid item into a larger space
+  #+BEGIN_SRC css
+    grid-template-areas:
+      "header header header"
+      "article nav ads"                  /* Previously this was "nav article ads" */
+      "footer footer footer";
+    grid-template-rows: 60px 1fr 60px;
+    grid-template-columns: 1fr 20% 15%;  /* Previously this was '20% 1fr 15%' */
+  #+END_SRC
+
+** Create a Responsive Grid
+- Grid has some "responsiveness" capabilities where fixed sized grid items will shift position according to the view port size
+- Can also combine grid with media queries to present a different grid for smaller view ports
+- Grid layout provides the ~auto-fill~ and ~auto-fit~ keywords that enable to create a grid with as many tracks of a certain size that will fill the container
+- This can result in a responsive grid, where the grid items re-position themselves as resize the browser
+
+*** The auto-fill Keyword
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      grid-gap: 2vw;
+    }
+
+    #grid > div {
+      font-size: 5vw;
+      padding: .5em;
+      background: gold;
+      text-align: center;
+    }
+  </style>
+  <div id="grid">
+    <div>1</div>
+    <div>2</divp>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+  </div>
+#+END_SRC
+
+**** grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+- This sets the columns to a minimum size of 150px, and a maximum of the remaining space
+- Tracks will repeat as many times as needed to fit into the container
+
+*** The auto-fit keyword
+- The ~auto-fit~ keyword works almost the same as ~auto-fill~
+- The difference is that ~auto-fit~ collapses any empty tracks at the end of the placement, whereas ~auto-fill~ doesn't
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    .grid {
+      display: grid;
+      grid-gap: 2vw;
+      border: 1px solid black;
+      margin: 10px;
+    }
+
+    .grid > div {
+      font-size: 5vw;
+      padding: .5em;
+      background: gold;
+      text-align: center;
+    }
+
+    .auto-fill {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .auto-fit {
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    }
+  </style>
+  <div class="grid auto-fill">
+    <div>1</div>
+    <div>2</div>
+  </div>
+  <div class="grid auto-fit">
+    <div>1</div>
+    <div>2</div>
+  </div>
+#+END_SRC
+
+- The ~auto-fill~ grid keeps the empty tracks at the end at the size specified
+- But ~auto-fit~ collapses the empty track, therefore resulting in the filled tracks stretching out to fill the space
+
+*** Grid with Media Queries
+- We can create a different layout within seconds
+- This makes grid layout ideal for media queries
+- Simply rearrange the values in ASCII art and wrap the result in a media query
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    body {
+      display: grid;
+      grid-template-areas:
+        "header header header"
+        "nav article ads"
+        "footer footer footer";
+      grid-template-rows: 80px 1fr 70px;
+      grid-template-columns: 20% 1fr 15%;
+      grid-row-gap: 10px;
+      grid-column-gap: 10px;
+      height: 100vh;
+      margin: 0;
+    }
+
+    /* Stack the layout on small devices/viewports. */
+    @media all and (max-width: 575px) {
+      body {
+        grid-template-areas:
+          "header"
+          "article"
+          "ads"
+          "nav"
+          "footer";
+        grid-template-rows: 80px 1fr 70px 1fr 70px;
+        grid-template-columns: 1fr;
+      }
+    }
+
+    header, footer, article, nav, div {
+      padding: 1.2em;
+      background: gold;
+    }
+
+    #pageHeader {
+      grid-area: header;
+    }
+
+    #pageFooter {
+      grid-area: footer;
+    }
+
+    #mainArticle {
+      grid-area: article;
+    }
+
+    #mainNav {
+      grid-area: nav;
+    }
+
+    #siteAds {
+      grid-area: ads;
+    }
+  </style>
+  <body>
+    <header id="pageHeader">Header</header>
+    <article id="mainArticle">Article</article>
+    <nav id="mainNav">Nav</nav>
+    <div id="siteAds">Ads</div>
+    <footer id="pageFooter">Footer</footer>
+  </body>
+#+END_SRC
+
+- This is a 3 column layout on a large view ports, and it collapses to a single column on smaller ones
+
+**** The Relevant Code for the 3 Column Layout
+#+BEGIN_SRC css
+  grid-template-areas:
+    "header header header"
+    "nav article ads"
+    "footer footer footer";
+#+END_SRC
+
+**** The Relevant Code for the Mobile Version
+#+BEGIN_SRC css
+  grid-template-areas:
+    "header"
+    "article"
+    "ads"
+    "nav"
+    "footer";
+#+END_SRC
+
+**** Wrap the Mobile Version in a media query
+#+BEGIN_SRC css
+  @media all and (max-width: 575px) {
+    body {
+      grid-template-areas:
+        "header"
+        "article"
+        "ads"
+        "nav"
+        "footer";
+      grid-template-rows: 80px 1fr 70px 1fr 70px;
+      grid-template-columns: 1fr;
+    }
+  }
+#+END_SRC
+
+*** Combining Grid with Block
+- Depending on layout requirements, there's nothing to stop from changing the mobile version to ~display: block~
+
+#+BEGIN_SRC css
+  @media all and (max-width: 575px) {
+    body {
+      display: block;
+    }
+  }
+#+END_SRC
+
+- This will work similar and by default the items will be stack in their source code
+- Also need to add some margins etc to compensate for any lack of gutters that were included in the grid version
+
+** Explicit vs Implicit Grid
+- CSS grid layout uses the concept of an explicit grid and an implicit grid
+- The ~explicit grid~ is the grid that defined with ~grid-template-rows~, ~grid-template-columns~ and ~grid-template-areas~ properties
+- Elements that don't fit into explicitly defined grid
+  - if define a grid that can only fit 6 grid items, but the grid container actually contains 9 grid items
+  - Only 6 items will fit into the explicit grid, and 3 will be left over
+  - This is where the implicit grid comes in
+- The ~implicit grid~ is automatically generated by the grid container whenever grid items are positioned outside of the explicit grid
+- The grid container generates implicit grid tracks by adding implicit grid lines to the grid
+- These lines together with the explicit grid form the implicit grid
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-rows: 60px 60px;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 10px;
+    }
+
+    #grid > div {
+      padding: .5em;
+      background: gold;
+      text-align: center;
+    }
+  </style>
+  <div id="grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+  </div>
+#+END_SRC
+
+- In this two rows and two columns defined
+- This will fit four grid items
+- There are six grid items, so an implicit grid has been created to accommodate the two extra items
+- This is a good thing, if the implicit grid hadn't been created, the two extra items would probably make a complete mess of the grid
+
+*** Setting the Track Size on Implicit Grids
+- The extra row is not as tall as its preceding two rows
+- This is because we set the row height using the ~grid-template-rows~ property
+  - but this only applies to rows on the explicit grid
+- The row height on the implicit grid needs to be set with ~grid-auto-rows~ property
+  - but if not doing this, the implicit row uses a track size of auto (which is content based)
+
+- =Explicit grid uses grid-template-rows and grid-template-columns=
+- =Implicit grid uses grid-auto-rows and grid-auto-columns=
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-rows: 60px 60px;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 10px;
+      grid-auto-rows: 60px;
+    }
+
+    #grid > div {
+      padding: .5em;
+      background: gold;
+      text-align: center;
+  }
+  </style>
+  <div id="grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+  </div>
+#+END_SRC
+
+*** Auto-flow across Rows vs Columns
+- ~grid-auto-flow~: It deals with grid items that are placed into tracks that created implicitly
+  - In other words, specify whether the implicit grid grows rows or columns
+
+  #+BEGIN_SRC html
+    <!doctype html>
+    <title>Example</title>
+    <style>
+      #grid {
+        display: grid;
+        grid-template-rows: 80px 80px;
+        grid-template-columns: 1fr 1fr;
+        grid-gap: 10px;
+        grid-auto-flow: column;
+      }
+
+      #grid > div {
+        padding: .5em;
+        background: gold;
+        text-align: center;
+      }
+    </style>
+    <div id="grid">
+      <div>1</div>
+      <div>2</div>
+      <div>3</div>
+      <div>4</div>
+      <div>5</div>
+      <div>6</div>
+    </div>
+  #+END_SRC
+
+*** The dense Keyword
+- The ~grid-auto-flow~ property also has an optional dense keyword that can help keep grid compact and prevent lots of gaps due to inconsistently sized grid items
+- It can come handy if grid have different sized items within an implicit grid
+
+**** Without the dense Keyword
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-gap: 2px;
+    }
+    #grid > div {
+      background-color: tomato;
+      color: white;
+      font-size: 4vw;
+      padding: 10px;
+      width: 20vw;
+    }
+    #grid > div.wide {
+      width: 40vw;
+      grid-column-end: span 2;
+    }
+  </style>
+  <div id="grid">
+    <div>1</div>
+    <div class="wide">2</div>
+    <div class="wide">3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+    <div>10</div>
+  </div>
+#+END_SRC
+
+**** With the dense Keyword
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      grid-auto-flow: dense;
+      grid-gap: 2px;
+    }
+    #grid > div {
+      background-color: tomato;
+      color: white;
+      font-size: 4vw;
+      padding: 10px;
+      width: 20vw;
+    }
+    #grid > div.wide {
+      width: 40vw;
+      grid-column-end: span 2;
+    }
+  </style>
+  <div id="grid">
+    <div>1</div>
+    <div class="wide">2</div>
+    <div class="wide">3</div>
+    <div>4</div>
+    <div>5</div>
+    <div>6</div>
+    <div>7</div>
+    <div>8</div>
+    <div>9</div>
+    <div>10</div>
+  </div>
+#+END_SRC
+** Grid Item Placement
+- Understanding how grid items are placed into the grid is crucial when working with CSS grid layout
+- Grid lines are the horizontal and vertical dividing lines of the grid
+- Each row and column has a grid line on either side of it (these can also be referred to as row lines and column lines)
+- Each grid line has a numerical index that can be refer to when placing a grid item
+
+- Example
+  #+BEGIN_SRC html
+    <!doctype html>
+    <title>Example</title>
+    <style>
+      #grid {
+        display: grid;
+        grid-template-rows: 50px 1fr 80px;
+        grid-template-columns: 120px 1fr 80px;
+        grid-gap: 5px;
+        height: 90vh;
+      }
+      #grid > div {
+        background-color: #66CC00;
+      }
+      #item1 {
+        grid-row-start: 1;
+        grid-column-start: 1;
+        grid-row-end: 2;
+        grid-column-end: 2;
+      }
+      #item2 {
+        grid-row-start: 3;
+        grid-column-start: 2;
+        grid-row-end: 4;
+        grid-column-end: 4;
+      }
+    </style>
+    <div id="grid">
+      <div id="item1"></div>
+      <div id="item2"></div>
+    </div>
+  #+END_SRC
+
+  #+BEGIN_SRC css
+  #item1 {
+    grid-row-start: 1;
+    grid-column-start: 1;
+    grid-row-end: 2;
+    grid-column-end: 2;
+  }
+
+  #item2 {
+    grid-row-start: 3;
+    grid-column-start: 2;
+    grid-row-end: 4;
+    grid-column-end: 4;
+  }
+#+END_SRC
+
+  - In Example, the first grid item starts at row line 1 and column line 1
+  - It ends at row line 2 and column line 2
+  - The second grid item starts at row line 3 and column line 2
+  - It ends at row line 4 and column line 4
+
+*** Named Grid Lines
+- Create own name for these grid lines for easier reference
+- Then name them with ~grid-template-rows~ and ~grid-template-columns~ properties
+
+#+BEGIN_SRC css
+  #grid {
+    display: grid;
+    /* Set the tracks and name the lines */
+    grid-template-rows: [row1-start] 50px [row2-start] 1fr [row3-start] 80px [row3-end];
+    grid-template-columns: [col1-start] 120px [col2-start] 1fr [col3-start] 80px [col3-end];
+    grid-gap: 5px;
+    height: 90vh;
+  }
+  ...
+
+  /* Now refer to those named lines */
+  #item2 {
+    grid-row-start: row3-start;
+    grid-column-start: col2-start;
+    grid-row-end: row3-end;
+    grid-column-end: col3-end;
+  }
+#+END_SRC
+
+- Named lines can be either explicit or implicit
+- Implicit named lines are created when named grid areas using the ~grid-template-areas~ property
+
+*** Named Grid Areas
+- A grid area can be named explicitly using the ~grid-template-areas~ property of the grid container
+
+#+BEGIN_SRC css
+  #grid {
+    display: grid;
+    /* Name the grid areas */
+    grid-template-areas:
+    "a a"
+      "b c";
+    ...
+  }
+
+  ...
+
+  /* Now apply each grid item to a named grid area  */
+  #a {
+    grid-area: a;
+  }
+  #b {
+    grid-area: b;
+  }
+  #c {
+    grid-area: c;
+  }
+#+END_SRC
+
+- Specify an empty cell with a full stop (.) or series of full stops with no space in between
+
+*** The Grid Placement Properties
+- There are three shorthand properties that can be used instead of the longhand grid placement properties
+
+**** grid-area
+- This property is shorthand for the following properties:
+
+***** grid-column
+- This property is shorthand for the following properties:
+
+****** grid-column-start
+- Specifies which column line a grid item starts on, and how many tracks it spans
+
+****** grid-column-end
+- Specifies which column line is a grid item ends on, and how many tracks it spans
+
+***** grid-row
+- This property is shorthand for the following properties:
+
+****** grid-row-start
+- Specifies which row line a grid item starts on, and how many tracks it spans
+
+****** gird-row-end
+- Specifies which row line a grid item ends on, and how many tracks it spans
+
+** Create a Nested Grid
+- A nested grid is where a grid item becomes a grid itself
+- Grid items can become grids themselves with CSS grid layout
+- Place grid items inside the grid item
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #outer-grid {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 8px;
+    }
+    #outer-grid > div {
+      background-color: limegreen;
+      color: white;
+      font-size: 4vw;
+      padding: 8px;
+    }
+    #inner-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 5px;
+    }
+    #inner-grid > div {
+      background: lightgreen;
+      padding: 8px;
+    }
+  </style>
+  <div id="outer-grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div id="inner-grid">
+      <div>5</div>
+      <div>6</div>
+      <div>7</div>
+      <div>8</div>
+    </div>
+  </div>
+#+END_SRC
+
+*** Inheritance
+- Most grid properties aren't inherited, which means that nested grid won't inherit the values from its parent grid
+- This allows to make changes to the parent grid without inadvertently affecting the rested grid
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #outer-grid {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 8px;
+      grid-auto-flow: column;
+    }
+    #outer-grid > div {
+      background-color: orangered;
+      color: white;
+      font-size: 4vw;
+      padding: 8px;
+    }
+    #inner-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 5px;
+    }
+    #inner-grid > div {
+      background: salmon;
+      padding: 8px;
+    }
+  </style>
+  <div id="outer-grid">
+    <div>1</div>
+    <div>2</div>
+    <div>3</div>
+    <div id="inner-grid">
+      <div>5</div>
+      <div>6</div>
+      <div>7</div>
+      <div>8</div>
+    </div>
+  </div>
+#+END_SRC
+
+- On the parent grid, the numbers flow vertically down the columns instead of horizontal across the rows
+  - but the nested grid still flows horizontally across the rows
+
+*** Subgrids
+- The CSS Grid Layout Module defines a ~subgrid~ value for the ~display~ property
+- A ~subgrid~ is a nested grid, but with ~display: subgrid~
+- This makes it a special type of grid container box that participates in sizing the grid of the parent grid container
+
+#+BEGIN_SRC html form element
+  <ul>
+    <li><label>Name:</label> <input name="first_name">
+    <li><label>Address:</label> <input name="address">
+    <li><label>Phone:</label> <input name="phone">
+  </ul>
+#+END_SRC
+
+#+BEGIN_SRC css
+  ul {
+    display: grid;
+    grid: auto-flow / auto 1fr;
+  }
+  li {
+    display: subgrid;
+    grid-column: span 2;
+    margin: 0.5em;
+    border: solid;
+    padding: 0.5em;
+  }
+  label {
+    grid-column: 1;
+  }
+  input {
+    grid-column: 2;
+  }
+#+END_SRC
+
+- This would result in the labels and inputs aligning, and a border placed around each list item
+- Setting each list item to a subgrid of the list means that there shouldn't be any alignment problems with form controls not lining up, etc
+  - because each list item will be contributing to the sizing of the parent grid
+
+** Form Layout with Auto-Placement
+- Take advantage of implicit grid when creating forms and any other collection of elements that require alignment in grid-like fashion
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    .myForm {
+      display: grid;
+      grid-template-columns: [labels] auto [controls] 1fr;
+      grid-auto-flow: row;
+      grid-gap: .8em;
+      background: beige;
+      padding: 1.2em;
+    }
+    .myForm > label  {
+      grid-column: labels;
+      grid-row: auto;
+    }
+    .myForm > input,
+    .myForm > textarea {
+      grid-column: controls;
+      grid-row: auto;
+    }
+    .myForm > button {
+      grid-column: span 2;
+    }
+  </style>
+  <form class="myForm">
+    <label for="customer_name">Name </label>
+    <input type="text" name="customer_name" id="customer_name" required>
+
+    <label for="email_address">Email </label>
+    <input type="email" name="email_address" id="email_address">
+
+    <label for="comments">Comments</label>
+    <textarea name="comments" id="comments" maxlength="500"></textarea>
+
+    <button>Submit</button>
+
+  </form>
+#+END_SRC
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    .myForm {
+      display: grid;
+      grid-template-columns: [labels] auto [controls] 1fr;
+      grid-auto-flow: row;
+      grid-gap: .8em;
+      background: beige;
+      padding: 1.2em;
+    }
+    .myForm > label,
+    .myForm > fieldset  {
+      grid-column: labels;
+      grid-row: auto;
+    }
+    .myForm > input,
+    .myForm > select,
+    .myForm > textarea {
+      grid-column: controls;
+      grid-row: auto;
+      padding: .4em;
+      border: 0;
+    }
+    .myForm > fieldset,
+    .myForm > button {
+      grid-column: span 2;
+    }
+    .myForm > button {
+      padding: 1em;
+      background: darkkhaki;
+      border: 0;
+      color: white;
+      }
+  </style>
+  <form class="myForm">
+    <label for="customer_name">Name </label>
+    <input type="text" name="customer_name" id="customer_name" required>
+
+    <label for="phone_number">Phone </label>
+    <input type="tel" name="phone_number" id="phone_number">
+
+    <label for="email_address">Email </label>
+    <input type="email" name="email_address" id="email_address">
+
+    <fieldset>
+      <legend>Which taxi do you require?</legend>
+      <label> <input type="radio" name="taxi" id="taxi_car" required value="car"> Car </label>
+      <label> <input type="radio" name="taxi" id="taxi_van" required value="van"> Van </label>
+      <label> <input type="radio" name="taxi" id="taxi_tuk" required value="tuktuk"> Tuk Tuk </label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Extras</legend>
+      <label> <input type="checkbox" name="extras" id="extras_baby" value="baby"> Baby Seat </label>
+      <label> <input type="checkbox" name="extras" id="extras_wheel" value="wheelchair"> Wheelchair Access </label>
+      <label> <input type="checkbox" name="extras" id="extras_tip" value="tip"> Stock Tip </label>
+    </fieldset>
+
+    <label for="pickup_time">Pickup Date/Time</label>
+    <input type="datetime-local" name="pickup_time" id="pickup_time" required>
+
+    <label for="pickup_place">Pickup Place</label>
+    <select name="pickup_place" id="pickup_place">
+      <option value="" selected="selected">Select One</option>
+      <option value="office" >Taxi Office</option>
+      <option value="town_hall" >Town Hall</option>
+      <option value="telepathy" >We'll Guess!</option>
+    </select>
+
+    <label for="dropoff_place">Dropoff Place</label>
+    <input type="text" name="dropoff_place" id="dropoff_place" required list="destinations">
+
+    <datalist id="destinations">
+      <option value="Airport">
+      <option value="Beach">
+      <option value="Fred Flinstone's House">
+    </datalist>
+
+    <label for="comments">Special Instructions</label>
+    <textarea name="comments" id="comments" maxlength="500"></textarea>
+
+    <button>Submit Booking</button>
+
+  </form>
+#+END_SRC
+** CSS Grid Alignment
+- Most alignment properties work the same way on grid items as they do on other elements
+- There are some alignment properties that apply specifically to grid and flex-box
+
+*** The align-items Property
+- The ~align-items~ property specifies the default ~align-self~ value for all the grid items participating in the grid container's formatting context
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 100vh;
+      grid-gap: 10px;
+      align-items: center;
+      background-color: beige;
+    }
+
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+
+    .red {
+      background: orangered;
+      height: 40%;
+    }
+
+    .green {
+      background: yellowgreen;
+      height: 60%;
+    }
+
+    .blue {
+      background: steelblue;
+      height: auto;
+    }
+
+    body {
+      margin: 0;
+    }
+  </style>
+
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+- All grid items are aligned to the center of the block axis with ~align-items: center;~
+
+*** The align-self Property
+- The ~align-self~ property aligns box within its containing block along the block/column/cross axis
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 100vh;
+      grid-gap: 10px;
+      align-items: center;
+      background-color: beige;
+    }
+
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+
+    .red {
+      background: orangered;
+      height: 40%;
+      align-self: baseline;
+    }
+
+    .green {
+      background: yellowgreen;
+      height: 60%;
+    }
+
+    .blue {
+      background: steelblue;
+      height: auto;
+      align-self: stretch;
+    }
+
+    body {
+      margin: 0;
+    }
+  </style>
+
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+- The red grid item has value of ~baseline~ and the blue item has value of ~stretch~
+- blue item's height is ~auto~, so it stretches to take up the full height of its grid area
+
+*** The justify-items Property
+- The ~justify-items~ property specifies the default ~justify-self~ value for all the grid items participating in the grid container's formatting context
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      grid-gap: 10px;
+      justify-items: center;
+      background-color: beige;
+    }
+
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+      width: 20%;
+    }
+
+    .red {
+      background: orangered;
+    }
+
+    .green {
+      background: yellowgreen;
+    }
+
+    .blue {
+      background: steelblue;
+    }
+  </style>
+
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+*** The justify-self Property
+- The ~justify-self~ property can be used to align an individual grid item along the inline/row/main axis
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      grid-gap: 10px;
+      justify-items: center;
+      background-color: beige;
+    }
+
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+      width: 20%;
+    }
+
+    .red {
+      background: orangered;
+      justify-self: end;
+    }
+
+    .green {
+      background: yellowgreen;
+    }
+
+    .blue {
+      background: steelblue;
+      justify-self: start;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+*** The justify-content Property
+- The ~justify-content~ property aligns the grid container's contents as a whole along the main/inline axis
+- This can be used for aligning the whole grid within the grid container, in the event that the grid tracks take up less space than their grid container
+- Set the track size with an absolute unit (such as pixels), while the grid container takes up more space than all the tracks combined
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 100px;
+      grid-template-rows: 1fr 1fr 1fr;
+      grid-gap: 10px;
+      justify-content: center;
+      background-color: beige;
+    }
+
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+
+    .red {
+      background: orangered;
+      width: 20px;
+    }
+
+    .green {
+      background: yellowgreen;
+    }
+
+    .blue {
+      background: steelblue;
+      width: 40px;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+*** The align-content Property
+- The ~align-content~ property is the same as ~justify-content~, except that this property aligns along the cross/block axis
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 100px;
+      grid-gap: 10px;
+      align-content: center;
+      background-color: beige;
+      height: 100vh;
+    }
+
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+
+    .red {
+      background: orangered;
+      height: 20px;
+    }
+
+    .green {
+      background: yellowgreen;
+    }
+
+    .blue {
+      background: steelblue;
+      height: 40px;
+    }
+
+    body {
+      margin: 0;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+*** The place-content Property
+- The ~place-content~ property is shorthand for ~justify-content~ and ~align-content~
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 60px 60px 60px;
+      grid-template-rows: 100px;
+      grid-gap: 10px;
+      place-content: center end;
+      /*place-content: start center;*/
+      /*place-content: center start;*/
+      background-color: beige;
+      height: 100vh;
+    }
+
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+
+    .red {
+      background: orangered;
+      height: 20px;
+    }
+
+    .green {
+      background: yellowgreen;
+    }
+
+    .blue {
+      background: steelblue;
+      height: 40px;
+    }
+
+    body {
+      margin: 0;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+*** The place-items Property
+- The ~place-items~ property is shorthand for ~justify-items~ and ~align-items~
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 100vh;
+      grid-gap: 10px;
+      place-items: end center;
+      background-color: beige;
+    }
+
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+
+    .red {
+      background: orangered;
+      height: 40%;
+    }
+
+    .green {
+      background: yellowgreen;
+      height: 60%;
+    }
+
+    .blue {
+      background: steelblue;
+      height: auto;
+    }
+
+    body {
+      margin: 0;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+*** The place-self Property
+- The ~place-self~ property is shorthand for ~justify-self~ and ~align-self~
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 100vh;
+      grid-gap: 10px;
+      background-color: beige;
+    }
+
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+
+    .red {
+      background: orangered;
+      height: 40%;
+      place-self: end;
+    }
+
+    .green {
+      background: yellowgreen;
+      height: 60%;
+      place-self: start center;
+    }
+
+    .blue {
+      background: steelblue;
+      height: auto;
+      place-self: center start;
+    }
+
+    body {
+      margin: 0;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+** Layering Grid Items
+- When using CSS Grid Layout, it's possible to have overlapping grid items due to intersecting grid areas, negative margins, or other positioning techniques
+- When this happens, items are layered according to order-modified document order and the ~z-index~ property
+
+*** Raw Document Order
+- If don't specifically reorder or apply ~z-index~ to any grid items, any overlapping items will be ordered based on the raw document order
+- That is, the order they appear in the source markup
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      height: 90vh;
+      background-color: beige;
+    }
+
+    .red {
+      background: orangered;
+    }
+
+    .green {
+      background: yellowgreen;
+      position: relative;
+      left: -20vw;
+      top: 20vh;
+    }
+
+    .blue {
+      background: steelblue;
+      position: relative;
+      left: -40vw;
+      top: 5vh;
+    }
+
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+*** Order-Modified Document Order
+- The term order-modified document order refers to the order each grid item has after any ordering operations have been applied
+- This will usually be the source order if haven't specifically reordered anything
+- The ~order~ property can reorder the items
+- With ~order~ property the grid items are layered incrementing from the lowest numbered ordinal group
+- Items with the same ordinal group are laid out in raw document order (i.e their order in the source document)
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      height: 90vh;
+      background-color: beige;
+    }
+    .red {
+      background: orangered;
+      position: relative;
+      left: -20vw;
+      top: 20vh;
+      order: 2;
+    }
+    .green {
+      background: yellowgreen;
+      position: relative;
+      left: -40vw;
+      top: 5vh;
+      order: 3;
+    }
+    .blue {
+      background: steelblue;
+      top: 5vh;
+      order: 1;
+    }
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+*** Using the z-index Property
+- The ~z-index~ property is also used to layer the items
+- This allows to control the order of an element along the z-axis
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      height: 90vh;
+      background-color: beige;
+    }
+    .red {
+      background: orangered;
+      z-index: 3;
+    }
+    .green {
+      background: yellowgreen;
+      position: relative;
+      left: -20vw;
+      top: 20vh;
+      z-index: 1;
+    }
+    .blue {
+      background: steelblue;
+      position: relative;
+      left: -40vw;
+      top: 5vh;
+      z-index: 2;
+    }
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+*** Combining z-index and order Properties
+- If the grid items have both reordered and had a ~z-index~ applied, the ~z-index~ values determine the ultimate stacking context
+- This enables to reorder the items without relinquishing control over the layering
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      grid-template-rows: 1fr 1fr 1fr;
+      height: 90vh;
+      background-color: beige;
+    }
+    .red {
+      background: orangered;
+      position: relative;
+      left: -20vw;
+      top: 20vh;
+      order: 2;
+      z-index: 1;
+    }
+    .green {
+      background: yellowgreen;
+      position: relative;
+      left: -40vw;
+      top: 5vh;
+      order: 3;
+      z-index: 2;
+    }
+    .blue {
+      background: steelblue;
+      top: 5vh;
+      order: 1;
+      z-index: 3;
+    }
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+  </div>
+#+END_SRC
+
+** Absolute Positioning with Grid
+- Use absolute positioning within a grid, like using within a regular block
+- If ~position: relative~ set on a grid item, then use ~position: absolute~ on one of its children, any positioning specify will apply within that grid item
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    body {
+      display: grid;
+      grid-template-areas:
+        "header header header"
+        "nav article ads"
+        "nav footer footer";
+      grid-template-rows: 50px 1fr 50px;
+      grid-template-columns: 20% 1fr 15%;
+      grid-gap: 10px;
+      height: 100vh;
+      margin: 0;
+    }
+    #pageHeader, #pageFooter, #mainArticle, #mainNav, #siteAds {
+      padding: 1em;
+      background: gold;
+    }
+    #pageHeader {
+      grid-area: header;
+    }
+    #pageFooter {
+      grid-area: footer;
+    }
+    #mainArticle {
+      grid-area: article;
+      position: relative;
+    }
+    #mainNav {
+      grid-area: nav;
+    }
+    #siteAds {
+      grid-area: ads;
+    }
+    #mainArticle > .phone {
+      position: absolute;
+      bottom: 0;
+      right: 1vw;
+      font-size: 3em;
+    }
+  </style>
+  <body>
+    <header id="pageHeader">Header</header>
+    <article id="mainArticle">
+      Article
+      <div class="phone">&phone;</div>
+    </article>
+    <nav id="mainNav">Nav</nav>
+    <div id="siteAds">Ads</div>
+    <footer id="pageFooter">Footer</footer>
+  </body>
+#+END_SRC
+
+*** Positioned Items don't Participate in the Grid Layout
+- Absolute positioned items don't participate in the grid layout, and they don't take up space
+- Therefore, they don't affect the placement of other grid items
+
+**** Without Absolute Positioning
+- In this example there are 4 box into the 2nd column on the first row, and all other boxes are set to auto
+- Box 4 effectively pushes box 2 out of its slot
+- Boxes 2 and 3 are auto-placed into the next available grid areas
+- Therefore, box 4 affected the placement of the grid items
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      position: relative;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      height: 90vh;
+      background-color: beige;
+    }
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+      text-align: center;
+    }
+    .red {
+      background: orangered;
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .green {
+      background: yellowgreen;
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .blue {
+      background: steelblue;
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .gray {
+      border: 16px solid black;
+      background: silver;
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+    <div class="gray">4</div>
+  </div>
+#+END_SRC
+
+**** With Absolute Positioning
+- By setting box 4 to ~position: absolute~, it's still located in box 2's position, but box 2 remains in that position unaffected
+- Box 3 is also unaffected
+
+#+BEGIN_SRC html
+  <!doctype html>
+  <title>Example</title>
+  <style>
+    #grid {
+      display: grid;
+      position: relative;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+      height: 90vh;
+      background-color: beige;
+    }
+    #grid > div {
+      padding: 20px;
+      font-size: 4vw;
+      color: white;
+      text-align: center;
+    }
+    .red {
+      background: orangered;
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .green {
+      background: yellowgreen;
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .blue {
+      background: steelblue;
+      grid-column: auto;
+      grid-row: auto;
+    }
+    .gray {
+      border: 16px solid black;
+      background: silver;
+      grid-column: 2 / 3;
+      grid-row: 1 / 2;
+      position: absolute;
+    }
+  </style>
+  <div id="grid">
+    <div class="red">1</div>
+    <div class="green">2</div>
+    <div class="blue">3</div>
+    <div class="gray">4</div>
+  </div>
+#+END_SRC
+
+*** The auto Value in Positioned Items
+- On normal grid items, the ~auto~ value for a grid-placement property resolves to ~span 1~, but on absolutely positioned items, it resolves to the padding edge of the grid container
+- The ~auto~ value is the initial for the grid-placement properties
+
+** Using the CSS Grid Inspector
+- Firefox DevTools provides a way to inspect the grid layout of any grid in the browser
+- This can be helpful if complex grid with grid items spanning many tracks, or a grid that's very sparsely populated
+- The grid inspector in DevTools allows to see the grid lines and any gutters between them
+
+** Browser Support for CSS Grid Layout
+- There are plenty of people using browsers that don't support grid
+- So these users won't be able to view wonderful new grid layout
+- Use failover, that non-grid browsers can still view website as intended (or close to)
+
+*** Testing for Grid with Feature Queries
+- The best way to use grid while supporting older browsers is to use feature queries
+- Use the ~supports~ at-rule to test whether or not the browser supports grid
+- If it does, then use the grid layout, otherwise the browser will see a layout built using older techniques (like floats, or tables)
+
+#+BEGIN_SRC css
+  @supports (display: grid) {
+    .wrapper {
+      display: grid;
+      min-height: 100vh;
+      ...
+    }
+  }
+#+END_SRC
+
+- That code is quite self-explanatory
+- Simply provided the ~property: value;~ declaration that want to test for
+- If the browser supports the given declaration, then it will run the code between the curly brackets
+
+- Specify the failover code before the ~supports~ rule
+  #+BEGIN_SRC css
+    /* Old code goes here */
+    ....old code....
+
+    /* Grid code goes here */
+    @supports (display: grid) {
+      .wrapper {
+        display: grid;
+        min-height: 100vh;
+        ...
+      }
+    }
+  #+END_SRC
+
+*** Supporting Microsoft Edge
+- Microsoft Edge and Internet Explorer currently support grid under the ~-ms-~ extension
+  #+BEGIN_SRC css
+    @supports ((display: -ms-grid) or (display: grid)) {
+      .wrapper {
+        displayL grid;
+        min-height: 100vh;
+        ...
+      }
+    }
+  #+END_SRC
+
+* Using the viewport meta tag to control layout on mobile browsers
+** Background
+- Mobile browsers render pages in a virtual "window" (the viewport), usually wider than the screen, so they don't need to squeeze every page layout into a tiny window (which would break many non-mobile-optimizied sites)
+- Users can pan and zoom to see different areas of the page
+- Mobile Safari introduced the "viewport meta tag" to let web developers control the viewport's size and scale
+- Many other mobile browsers now support this tag, although it is not part of any web standard
+- The content is a "comma-delimited list", but existing browsers and web pages use any mix of commas, semicolons, and spaces as separators
+** Viewport basics
+- Mobile-optimized site contains something
+  #+BEGIN_SRC html
+    <meta name='viewport' content='width=device-width, initial-scale=1">
+  #+END_SRC
+- The ~width~ property controls the size of the ~viewport~
+- It can set to specific number of pixels like width=600 or to the special value ~device-width~ which is the width of the screen in CSS pixels at a scale of 100%
+- There are corresponding height and device-height values, which may be useful for pages with elements that change size based on the viewport height
+- The ~initial-scale~ property controls the zoom level when the page is first loaded
+- The ~maximum-scale~, ~minimum-scale~, and ~user-scalable~ properties control how users are allowed to zoom the page in or out
+** A pixel is not a pixel
+- In recent years, screen resolutions have risen to the size that individual pixels are hard to distinguish with the human eye
+- For example, smartphones generally have 5-inch screens with resolutions upwards of 1920 - 1080 pixels (~400 dpi)
+- Because of this, many browsers can display their pages in a smaller physical size by translation multiple hardware pixels for each CSS "pixel"
+- Initially this caused usability and readability problems on many touch optimized web sites
+- On high dpi screens, pages with ~initial-scale=1~ will effectively be zoomed by browsers
+- Their text will be smooth and crisp, but their bitmap images will probably not take advantage of the full screen resolution
+- To get sharper images on these screens, design images or whole layout - at a higher scale than their final size and then scale them down using CSS or viewport properties
+- If the pixel density of the output device is very different from that of a typical computer display
+- The user agent should rescale pixel values
+- It is recommanded that the pixel unit refer to the whole number of device pixels that best approximates the reference pixel
+- It is recommanded that the reference pixel to be visual angle of one pixel on a device with a pixel density of 96dpi and a distance from the reader of an arm's length
+- This means that the size of the page is much smaller than the actual pixel count and browsers may size their layouts and images accordingly
+- But not all mobile devices are the same width, make sure that pages work well in large variation of screen sizes and orientations
+- The default pixel ratio depends on the display density
+- On a display with density less than 200dpi, the ratio is 1.0
+- On displays with density between 200 and 300 dpi, the ratio is 1.5
+- For displays with density over 300dpi, the ratio is the integer floor (density/150dpi)
+- Default ratio is true only when the viewport scale equals 1 otherwise, the relationship between CSS pixels and device pixels depends on the current zoom level
+** Viewport width and screen width
+- Sites can set their viewport to a specific size
+- For example, the definition ~width=320, initial-scale=1~ can be used to fit precisely onto a small phone display in portrait mode
+- This can cause problems when the browser doesn't render a page at a large size
+- To fix this, browsers will expand the viewport width if necessary to fill the screen at the requested scale
+- This is especially useful on large-screen devices like the iPad
+- For pages that set an initial or maximum scale, this means the width property actually translates into a minimum viweport width
+- For example, if layout needs at least 500 pixels of the width then use following markup
+- When the screen is more than 500 pixels wide, the browsers will expand the viewport (rather than zoom in) to fit the screen
+  #+BEGIN_SRC html
+    <meta name='viewpor' content='width=500, initial-scale=1'>
+  #+END_SRC
+- Other attributes that are available are ~minimum-scale~, ~maximum-scale~, and ~user-scalable~
+- These properties affect the initial scale and width, as well as limiting changes in zoom level
+- Not all mobile browsers handle orientation changes in the same way
+- For example, Mobile Safari often just zooms the page when changing from portrait to landscape, instead of laying out the pages as it would if originally loaded in landscape
+- If web developers want their scale settings to remain consistent when switching orientations on the iPhone
+- Add a ~maximum-scale~ value to prevent this zooming, which has the sometimes-unwanted side effect of preventing users from zooming in
+  #+BEGIN_SRC html
+    <meta name='viewport' content='initial-scale=1, maximum-scale=1'>
+  #+END_SRC
