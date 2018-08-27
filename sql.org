@@ -43,18 +43,17 @@ e.g
 
     # Create table
     c.execute("""CREATE TABLE IF NOT EXISTS projects (
-                                                      id integer PRIMARY KEY autoincrement,
-                                                      name text NOT NULL,
-                                                      begin_date text,
-                                                      end_date text
-                                                     );
-              """)
-
+      id integer PRIMARY KEY autoincrement,
+      name text NOT NULL,
+      begin_date text,
+      end_date text
+      );
+    """)
 
     conn.close()
   #+END_SRC
 
-** jField data types in sqlite3
+** Field data types in sqlite3
 - *Data Type*: is an attribute that specifies type of any object
   - Each column, variable and expression has related data type in SQLite
 
@@ -117,7 +116,7 @@ e.g
     - Boolean values are stored as integers 0 (false) and 1 (true)
 
 ** Queries
-- *Select*: statement used to fetch data from SQLite database table which returns data in the form of result table
+- *Select*: statement is used to fetch data from SQLite database table which returns data in the form of result table
   - result tables also called result-sets
   - Syntax:
 
@@ -175,11 +174,38 @@ e.g
       ORDER BY column1, column2 .... columnN;
     #+END_SRC
 
+  - E.g
+
+    #+BEGIN_SRC sql
+      SELECT * FROM Company;
+
+      ID          NAME        ADDRESS     SALARY
+      ----------  ----------  ----------  ----------
+      1           Paul        California  20000.0
+      2           Allen       Texas       15000.0
+      3           Mark        Rich-Mond   65000.0
+      4           David       Texas       85000.0
+      5           James       Houston     10000.0
+      6           Paul        Houston     20000.0
+      7           James       Norway      5000.0
+      8           James       Texas       5000.0
+
+      SELECT NAME, SUM(SALARY) FROM Company GROUP BY NAME;
+
+      NAME        SUM(SALARY)
+      ----------  -----------
+      Allen       15000
+      David       85000
+      James       20000
+      Mark        65000
+      Paul        40000
+    #+END_SRC
+
 - *Insert*: into statement is used to add rows of data into a table in database
   - Syntax
 
     #+BEGIN_SRC sql
-      INSERT INTO tablename [(column1, column2,... columnN)]
+      INSERT INTO tablename (column1, column2,... columnN)
       VALUES (value1, value2,... valueN);
 
       INSERT INTO tablename VALUES (value1, value2,... valueN);
@@ -230,7 +256,7 @@ e.g
     #+END_SRC
 
 - *Having*: clause enables to specify conditions that filter which groups results appear in the final results
-  - It places conditions on the selected columns, whereas the HAVING clause places conditions on groups created by GROUP BY clause
+  - "WHERE" places conditions on the selected columns, whereas the HAVING clause places conditions on groups created by GROUP BY clause
   - Syntax
 
     #+BEGIN_SRC sql
@@ -238,6 +264,41 @@ e.g
       WHERE [ conditions ]
       GROUP BY column1, ... columnN
       HAVING [ conditions ];
+    #+END_SRC
+
+  - E.g
+
+    #+BEGIN_SRC sql
+      SELECT * FROM Company;
+
+      ID          NAME        AGE         ADDRESS     SALARY
+      ----------  ----------  ----------  ----------  ----------
+      1           Paul        32          California  20000.0
+      2           Allen       25          Texas       15000.0
+      3           Teddy       23          Norway      20000.0
+      4           Mark        25          Rich-Mond   65000.0
+      5           David       27          Texas       85000.0
+      6           Kim         22          South-Hall  45000.0
+      7           James       24          Houston     10000.0
+      8           Paul        24          Houston     20000.0
+      9           James       44          Norway      5000.0
+      10          James       45          Texas       5000.0
+
+      SELECT * FROM Company GROUP BY NAME HAVING COUNT(NAME) < 2;
+
+      ID          NAME        AGE         ADDRESS     SALARY
+      ----------  ----------  ----------  ----------  ----------
+      2           Allen       25          Texas       15000
+      5           David       27          Texas       85000
+      6           Kim         22          South-Hall  45000
+      4           Mark        25          Rich-Mond   65000
+      3           Teddy       23          Norway      20000
+
+      SELECT * FROM Company GROUP BY NAME HAVING COUNT(NAME) > 2;
+
+      ID          NAME        AGE         ADDRESS     SALARY
+      ----------  ----------  ----------  ----------  ----------
+      10          James       45          Texas       5000
     #+END_SRC
 
 - *In*: condition is used to help reduce the need to use multiple OR conditions in a SELECT, INSERT, UPDATE, or DELETE statement
@@ -322,6 +383,25 @@ e.g
   - *UNIQUE* Constraint: Ensures that all values in column are different
   - *PRIMARY KEY* Uniquely identified each rows/records in database table
   - *CHECK* Constraint: Ensures that all values in column satisfy certain conditions
+
+  - *foreign_key*: is used to ensure referential integrity of the data in one table to match values in another table
+    - It may be one column or list of columns which points to PRIMARY KEY of another table
+    - E.g
+
+      #+BEGIN_SRC sql
+        CREATE TABLE company (
+               com_id int PRIMARY KEY NOT NULL UNIQUE,
+               com_name text NOT NULL
+               );
+
+        CREATE TABLE item (
+               item_id INT NOT NULL UNIQUE PRIMARY KEY,
+               item_desc TEXT NOT NULL,
+               rate INT NOT NULL,
+               com_id text NOT NULL,
+               FOREIGN KEY (com_id) REFERENCES company(com_id)
+               );
+      #+END_SRC
 
   - E.g
 
