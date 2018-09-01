@@ -1,0 +1,108 @@
+* Redux
+- Redux is component based library used for front-end
+- It is used for application state management
+- It is a tool for managing data-state and UI-state
+- It separates the application data and business logic into its own container so react will only manage view
+- It is an application data-flow architecture
+- Maintains the state in a single state tree (object), which cannot be changed directly
+- When something changes, a new object is created (using actions and reducers)
+
+** Principles of Redux
+*** Single source of truth
+- The state of the application is stored in an object tree in a single store
+- The single state tree makes it easier to keep track of the changes over time and debug application
+
+#+BEGIN_SRC js
+  console.log(store.getState());
+#+END_SRC
+
+*** State is read-only
+- The only way to change the state is to trigger an action
+- Action is an object describing the change
+
+#+BEGIN_SRC js
+  const addArticle = article => ({ type: ADD_ARTICLE, payload: article });
+#+END_SRC
+
+*** Changes are made with pure functions
+- Write pure functions to update the state tree by actions
+- Pure functions are those whose return values depend on values of their arguments
+- Reducers are pure functions that takes the previous state and an action and return the next state
+
+#+BEGIN_SRC js
+  const articleReducer = (state = [], action) => {
+      switch (action.type) {
+      case "ADD_ARTICLE":
+          return [...state, action.payload];
+      default:
+          return state;
+      }
+  };
+#+END_SRC
+
+** Actions
+- Actions send data from the application (UI, API calls, form submissions) to the store
+- The store get information only from actions
+- Actions are objects that have a type property (describing the type of action) and information sent to the store
+
+#+BEGIN_SRC js
+  {
+      type: "ADD_ARTICLE",
+      payload: {title: 'abc'}
+  }
+#+END_SRC
+
+- Actions are created with action creators (function that return action)
+
+#+BEGIN_SRC js
+  const addArticle = article => ({ type: ADD_ARTICLE, payload: article });
+#+END_SRC
+
+- Send actions to the store by using ~store.dispatch()~
+
+#+BEGIN_SRC js
+  dispatch(addArticle(article));
+#+END_SRC
+
+- Actions only describe what happened, not how state changes
+
+** Reducers
+- Reducers tell how state changes in response to ~actions~
+- Reducers are pure functions
+- It takes the current state and an action as arguments and then returns the next state
+
+#+BEGIN_SRC js
+  const articleReducer = (state = [], action) => {
+      switch (action.type) {
+      case "ADD_ARTICLE":
+          return [...state, action.payload];
+      default:
+          return state;
+      }
+  };
+#+END_SRC
+
+** Store
+- Store is the object that brings ~actions~ and ~reducers~ together
+- It holds application state
+- Allows access to state via ~getState()~
+- Allows state to be updated via ~dispatch(action)~
+- Registers listeners via ~subscribe(listener)~
+
+#+BEGIN_SRC js
+  import { createStore } from 'redux';
+
+  const store = createStore(rootReducer);
+  const article = {title: 'abc'};
+
+  store.dispatch(addArticle(article));
+
+#+END_SRC
+
+** Data Flow
+- All data in an application follows the same life-cycle pattern
+- The data life-cycle follows 4 steps:
+  - Call ~store.dispatch(action)~
+  - Store calls the reducer function
+  - Root reducer combine the output of multiple reducers into a single state tree
+  - Store saves the state tree returned by the root reducer
